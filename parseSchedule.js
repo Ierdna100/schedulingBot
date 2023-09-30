@@ -6,6 +6,10 @@ function ParseSchedule(schedule)
         schedule[index] = element.split("\t")
     })
 
+    // if copied badly and has trailing space
+    if (schedule[schedule.length - 1] == '')
+        schedule.splice(schedule.length - 1)
+
     days = {
         monday: [],
         tuesday: [],

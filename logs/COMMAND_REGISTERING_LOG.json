@@ -1,0 +1,56 @@
+{
+	"requestBody": {
+		"json": [
+			{
+				"name": "clearSchedule",
+				"description": "Clears your schedule and name from the board."
+			},
+			{
+				"name": "help",
+				"description": "Responds with instructions on usage of bot."
+			},
+			{
+				"name": "setDisplayName",
+				"description": "Allows you to set your display name on the board.",
+				"options": [
+					{
+						"type": 3,
+						"name": "name",
+						"description": "Name to replace your old one.",
+						"required": true
+					}
+				]
+			},
+			{
+				"name": "uploadschedule",
+				"description": "Allows you to upload a schedule. Type \"/help\" for instructions.",
+				"options": [
+					{
+						"type": 3,
+						"name": "schedule",
+						"description": "schedule as described by the instructions.",
+						"required": true
+					}
+				]
+			}
+		]
+	},
+	"rawError": {
+		"message": "Invalid Form Body",
+		"code": 50035,
+		"errors": {
+			"name": {
+				"_errors": [
+					{
+						"code": "APPLICATION_COMMAND_INVALID_NAME",
+						"message": "Command name is invalid"
+					}
+				]
+			}
+		}
+	},
+	"code": 50035,
+	"status": 400,
+	"method": "PUT",
+	"url": "https://discord.com/api/v10/applications/1157538598481043466/commands"
+}

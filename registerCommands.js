@@ -31,5 +31,6 @@ async function main()
     catch (error) 
     {
         console.error(error)
+        fs.writeFileSync("./logs/COMMAND_REGISTERING_LOG.json", JSON.stringify(error, null, "\t"))
     }
 }

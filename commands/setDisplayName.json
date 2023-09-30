@@ -1,0 +1,12 @@
+{
+    "name": "setdisplayname",
+    "description": "Allows you to set your display name on the board.",
+    "options": [
+        {
+            "type": 3,
+            "name": "name",
+            "description": "Name to replace your old one.",
+            "required": true
+        }
+    ]
+}

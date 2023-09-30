@@ -25,6 +25,7 @@ client.on('interactionCreate', async interaction => {
         case 'setDisplayName':
         case 'uploadSchedule':
         case 'clearSchedule':
+        case 'defineClass':
         default:
             await interaction.reply({ content: "`501 - Not Implemented`" })
     }

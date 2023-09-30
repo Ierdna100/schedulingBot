@@ -6,8 +6,8 @@ function UpdateUserSchedule(user, newParsedSchedule) {
 
 }
 
-function UpdateUserClassReference(user, classReferenceID, classReferenceName) {
+function UpdateUserClassDefinition(user, classID, definition) {
     
 }
 
-module.exports = { UpdateUserDisplayName, UpdateUserSchedule, UpdateUserClassReference }
+module.exports = { UpdateUserDisplayName, UpdateUserSchedule, UpdateUserClassDefinition }
