@@ -23,9 +23,20 @@ client.on('interactionCreate', async interaction => {
 
     switch (interaction.commandName) {
         case 'setDisplayName':
+            await updateChannel.send("Name command prompted!");
+            break;
         case 'uploadSchedule':
+            await updateChannel.send("Schedule command prompted!");
+            break;
         case 'clearSchedule':
+            await updateChannel.send("Clear command prompted!");
+            break;
         case 'defineClass':
+            await updateChannel.send("Class command prompted(WTF is this, you didn't document it!)");
+            break;
+        case 'help':
+            await updateChannel.send("Help command prompted!");
+            break;
         default:
             await interaction.reply({ content: "`501 - Not Implemented`" })
     }
