@@ -1,4 +1,4 @@
 /schedules/*
 /node_modules/
 /.env
-./logs/*
+/logs/*

@@ -22,10 +22,12 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return
 
     switch (interaction.commandName) {
-        case 'setDisplayName':
-        case 'uploadSchedule':
-        case 'clearSchedule':
-        case 'defineClass':
+        case 'setdisplayname':
+            
+        case 'uploadschedule':
+        case 'clearschedule':
+        case 'defineclass':
+        case 'help':
         default:
             await interaction.reply({ content: "`501 - Not Implemented`" })
     }
