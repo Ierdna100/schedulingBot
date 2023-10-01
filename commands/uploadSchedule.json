@@ -1,12 +1,4 @@
 {
     "name": "uploadschedule",
-    "description": "Allows you to upload a schedule. Type \"/help\" for instructions.",
-    "options": [
-        {
-            "type": 3,
-            "name": "schedule",
-            "description": "schedule as described by the instructions.",
-            "required": true
-        }
-    ]
+    "description": "Initiates the schedule upload questions."
 }

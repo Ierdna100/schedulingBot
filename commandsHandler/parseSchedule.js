@@ -1,5 +1,7 @@
 function ParseSchedule(schedule)
 {
+    let highestClassIndex = 0
+
     schedule = schedule.split("\n")
 
     schedule.forEach((element, index) => {
@@ -36,7 +38,7 @@ function ParseSchedule(schedule)
     }
 
     const startTime = 8
-    const endTime = 18
+    //const endTime = 18
     const timeDivisions = 0.5
 
     for (day in days) {
@@ -44,15 +46,21 @@ function ParseSchedule(schedule)
 
         // element = ID of class
         days[day].forEach((element, index) => {
+            if (element == undefined)
+            {
+                element = " "
+            }
             // If the element is new
             if (element != oldID)
             {
                 // If new and not a space, must be a new class
                 if (element != " ")
                 {
+                    highestClassIndex = Math.max(highestClassIndex, parseInt(element))
+
                     // Add new class
                     daysClass[day].push({
-                        id: element,
+                        id: parseInt(element),
                         startTime: startTime + index * timeDivisions,
                         endTime: 0
                     })
@@ -68,7 +76,44 @@ function ParseSchedule(schedule)
         })
     }
 
-    return daysClass
+    return { daysClass: daysClass, numberOfClasses: highestClassIndex}
 }
 
-module.exports = { ParseSchedule }
+function ParseClasses(rawClasses)
+{
+    rawClasses = rawClasses.replaceAll("\t", "")
+    rawClasses = rawClasses.split("\n")
+
+    let halfParsedClasses = []
+    let parsedClasses = []
+
+    let lastLineWasSpaceString = true
+
+    for (line of rawClasses)
+    {
+        if (line == "" || line == " ")
+        {
+            lastLineWasSpaceString = true
+            continue
+        }
+        else if (lastLineWasSpaceString)
+        {
+            halfParsedClasses.push(line)
+        }
+
+        lastLineWasSpaceString = false
+    }
+
+    halfParsedClasses.forEach((halfParsedClass, i) => {
+        indexOfSpace = halfParsedClass.indexOf(" ")
+
+        parsedClasses.push({
+            id: parseInt(halfParsedClass.substring(0, indexOfSpace)),
+            name: halfParsedClass.substring(indexOfSpace + 2)
+        })
+    })
+
+    return parsedClasses
+}
+
+module.exports = { ParseSchedule, ParseClasses }

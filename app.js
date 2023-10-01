@@ -1,7 +1,9 @@
 const { Client, GatewayIntentBits } = require('discord.js')
-const { GenerateNewSchedulesEmbed } = require('./upateSchedulesEmbed.js')
+const { GenerateNewSchedulesEmbed } = require('./periodicEventsHandlers/updateSchedulesEmbed.js')
 const createLogger = require('logging')
 const { AddVariableToEnvFile } = require('./envManager.js')
+const { UpdateUserDisplayName, InitializeScheduleRequest, ClearUserSchedule, UploadUserSchedule } = require('./commandsHandler/userHandler.js')
+const { ReplyWithSchedule } = require('./commandsHandler/getScheduleHandler.js')
 require('dotenv').config()
 
 /**@type Channel */
@@ -19,17 +21,40 @@ client.on('ready', () => {
 })
 
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isChatInputCommand()) return
+    if (interaction.isChatInputCommand())
+    {
+        let userID = interaction.user.id
+        let options = interaction.options
 
-    switch (interaction.commandName) {
-        case 'setdisplayname':
-            
-        case 'uploadschedule':
-        case 'clearschedule':
-        case 'defineclass':
-        case 'help':
-        default:
-            await interaction.reply({ content: "`501 - Not Implemented`" })
+        switch (interaction.commandName) {
+            case 'setdisplayname':
+                await UpdateUserDisplayName(interaction, userID, options.get('name'))
+                break
+            case 'uploadschedule':
+                await InitializeScheduleRequest(interaction)
+                break
+            case 'clearschedule':
+                await ClearUserSchedule(interaction, userID)
+                break
+            case 'getschedule':
+                await ReplyWithSchedule(interaction, options.get('user'))
+                break
+            case 'help':
+                await interaction.reply({ files: [ "./images/uploadingScheduleInfoV1.png" ]})
+                break
+            default:
+                await interaction.reply({ content: "`501 - Not Implemented`" })
+        }
+    }
+    else if (interaction.isModalSubmit())
+    {
+        let userID = interaction.user.id
+        let components = interaction.components
+
+        if (interaction.customId == "schedule_modal")
+        {
+            UploadUserSchedule(interaction, userID, components)
+        }
     }
 })
 
