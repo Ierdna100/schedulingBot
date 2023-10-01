@@ -3,3 +3,6 @@
 /.env
 /logs/*
 /node_mdoules/*
+
+# keep schedules file
+!./schedules/
