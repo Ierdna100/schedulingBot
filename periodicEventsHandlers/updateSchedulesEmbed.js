@@ -40,7 +40,7 @@ const MonthsOfTheYear = {
     8: "September",
     9: "October",
     10: "November",
-    11: "Decmber"
+    11: "December"
 }
 
 function UpdateSchedulesInMemory()
