@@ -28,16 +28,6 @@ const CurrentlyDoing = {
 }
 
 /**@enum */
-const CurrentlyDoingString = {
-    1: "Currently in ", //
-    2: "About to start class",
-    3: "Currently in break",
-    4: "About to start break", //
-    5: "Finished day", //
-    6: "About to finish day" //
-}
-
-/**@enum */
 const MonthsOfTheYear = {
     0: "January",
     1: "February",
@@ -121,8 +111,8 @@ function GenerateNewSchedulesEmbed()
         }
 
         let currentClassID
-        let maxCourseIndex = student.schedule[dayKey]
-        let courseIndex = 0
+        let maxCourseIndex = student.schedule[dayKey].length
+        let courseIndex = 0 // Our system is 0 indexed, schedules are 1 indexed
         for (course of student.schedule[dayKey])
         {
             // If we are over the start time
@@ -179,10 +169,11 @@ function GenerateNewSchedulesEmbed()
             case CurrentlyDoing.almostBreak:
             case CurrentlyDoing.almostEnd:
             case CurrentlyDoing.inClass:
-                fieldValue += `**Currently in** __${student.classDefinition[currentClassID].name}__\n`
+                // classDefs are off by one in the JSON
+                fieldValue += `**Currently in** __${student.classDefinition[currentClassID - 1].name}__\n`
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
 
-                if (courseIndex != maxCourseIndex)
+                if (courseIndex + 1 != maxCourseIndex)
                 {
                     let previousCourse = student.schedule[dayKey][courseIndex]
                     for (let i = (courseIndex + 1); i < student.schedule[dayKey].length; i++)
@@ -191,27 +182,32 @@ function GenerateNewSchedulesEmbed()
 
                         if (currentCourse.startTime != previousCourse.endTime)
                         {
-                            fieldValue += `**Next break:** \`[${DecimalHoursToHumanReadable(previousCourse.endTime)}]\``
+                            fieldValue += `**Next break:** \`[${DecimalHoursToHumanReadable(previousCourse.endTime)}]\`\n`
                             break
                         }
                     }
 
-                    fieldValue += `**Next class:** __${student.classDefinition[student.schedule[dayKey][courseIndex + 1].id].name}__\n`
+                    // classDefs are off by one in the JSON
+                    fieldValue += `**Next class:** __${student.classDefinition[student.schedule[dayKey][courseIndex].id].name}__\n`
                     fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex + 1].endTime)}]\`\n`
+                    fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 }
-                fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
+                    
                 break
             case CurrentlyDoing.almostClass:
                 fieldValue += `**Class starting soon**\n`
             case CurrentlyDoing.inBreak:
                 fieldValue += `**Currently in break**\n`
-                fieldValue += `**Next class:** __${student.classDefinition[student.schedule[dayKey][courseIndex].id].name}__\n`
+                fieldValue += `**Until:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].startTime)}]\`\n`
+                // classDefs are off by one in the JSON
+                fieldValue += `**Next class:** __${student.classDefinition[student.schedule[dayKey][courseIndex - 1].id].name}__\n`
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
                 fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 break
             // Not technically used
             case CurrentlyDoing.finishedDay:
                 fieldValue += `**Day ended**`
+                break
             default:
                 logger.warn(`Invalid studentStatus for student ${student.displayName} (${schedule.id})`)
                 fieldValue += `\`\`\`diff\n-Error 500: Internal Server Error\n\`\`\``
@@ -253,7 +249,7 @@ function GenerateNewSchedulesEmbed()
             },
             fields: fields,
             timestamp: currentDate.toISOString(),
-            color: parseInt("0x0091ff")
+            color: 0x0091FF
         }
     ]}
 }

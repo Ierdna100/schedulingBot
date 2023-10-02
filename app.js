@@ -4,6 +4,7 @@ const createLogger = require('logging')
 const { AddVariableToEnvFile } = require('./envManager.js')
 const { UpdateUserDisplayName, InitializeScheduleRequest, ClearUserSchedule, UploadUserSchedule } = require('./commandsHandler/userHandler.js')
 const { ReplyWithSchedule } = require('./commandsHandler/getScheduleHandler.js')
+const { ReplyWithLoggedUsers } = require('./commandsHandler/getLoggedUsers.js')
 require('dotenv').config()
 
 /**@type Channel */
@@ -41,6 +42,9 @@ client.on('interactionCreate', async interaction => {
                 break
             case 'help':
                 await interaction.reply({ files: [ "./images/uploadingScheduleInfoV1.png" ]})
+                break
+            case 'getusers':
+                await ReplyWithLoggedUsers(interaction)
                 break
             default:
                 await interaction.reply({ content: "`501 - Not Implemented`" })
