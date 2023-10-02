@@ -196,10 +196,6 @@ function GenerateNewSchedulesEmbed()
                 break
             case CurrentlyDoing.almostClass:
                 fieldValue += `**Class starting soon**\n`
-                // fieldValue += `**Next class:** __${student.classDefinition[student.schedule[dayKey][courseIndex].id].name}__\n`
-                // fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
-                // fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
-                // break
             case CurrentlyDoing.inBreak:
                 fieldValue += `**Currently in break**\n`
                 fieldValue += `**Until:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].startTime)}]\`\n`
@@ -253,7 +249,7 @@ function GenerateNewSchedulesEmbed()
             },
             fields: fields,
             timestamp: currentDate.toISOString(),
-            color: parseInt("0x0091ff")
+            color: 0x0091FF
         }
     ]}
 }
