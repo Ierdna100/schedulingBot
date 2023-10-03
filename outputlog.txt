@@ -1,0 +1,7 @@
+21:24:30.923 [Scheduling Bot] Websocket ready and connected as: Scheduling Bot#4758
+21:24:30.924 [WARNING Scheduling Bot] Message reference is missing, generating new message reference.
+21:31:50.948 [Scheduling Bot] Websocket ready and connected as: Scheduling Bot#4758
+21:31:50.950 [WARNING Scheduling Bot] Message reference is missing, generating new message reference.
+22:05:51.718 [ERROR Scheduling Bot] [31m[DiscordAPIError[10008]: Unknown Message][39m
+22:07:51.759 [WARNING Scheduling Bot] Message ID was not present, generated new message with ID: 1158586183463489637
+22:09:51.773 [WARNING Scheduling Bot] Message reference is missing, generating new message reference.

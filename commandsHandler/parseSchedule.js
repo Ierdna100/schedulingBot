@@ -2,6 +2,8 @@ function ParseScheduleV2(schedule)
 {
     schedule = schedule.split('\n')
 
+    // console.log(schedule)
+
     let classDays = {
         monday: [],
         tuesday: [],
@@ -10,7 +12,7 @@ function ParseScheduleV2(schedule)
         friday: []
     }
 
-    let newClassState = 0
+    let newClassState = true
     let classTitle = ""
 
     for (element of schedule)
@@ -19,19 +21,29 @@ function ParseScheduleV2(schedule)
 
         if (element == " ")
         {
-            newClassState = 1
+            newClassState = true
             continue
         }
 
-        if (newClassState == 1)
+        if (newClassState)
         {
-            classTitle = element.split('\t')[1]
-            newClassState = 2
+            if (element.indexOf("\t") == -1)
+            {
+                indexOfFirstSpace = element.indexOf(" ")
+                classTitle = element.substring(indexOfFirstSpace + 2)
+                classTitle = classTitle.trim()
+            }
+            else
+            {
+                classTitle = element.split('\t')[1]
+            }
+
+            newClassState = false
             continue
         }
-        else if (newClassState == 2)
+        else if (!newClassState)
         {
-            switch(element.substring(0, 3))
+            switch(element.replaceAll("\t", "").replaceAll(" ", "").substring(0, 3))
             {
                 case "Lun":
                     classDays.monday.push(ParseClassElement(classTitle, element))
@@ -56,9 +68,9 @@ function ParseScheduleV2(schedule)
 }
 
 function ParseClassElement(classTitle, element)
-{
+{ 
     //[ 'Mer', '11:00', '-', '12:30,', 'local', 'B-503;B-502' ]
-    element = element.split(" ")
+    element = element.trim().split(" ")
 
     let startTime = element[1].split(":")
     startTime = parseInt(startTime[0]) + parseFloat(startTime[1]) / 60
@@ -66,7 +78,7 @@ function ParseClassElement(classTitle, element)
     let endTime = element[3].split(":")
     endTime = parseInt(endTime[0]) + parseFloat(endTime[1]) / 60
 
-    let rooms = element[5].split(";")
+    let rooms = element[5]?.split(";")
 
     return {
         className: classTitle,

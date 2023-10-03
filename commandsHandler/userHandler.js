@@ -2,14 +2,29 @@ const { scheduleModal } = require("./modals.js")
 const fs = require('fs')
 const { ParseScheduleV2 } = require("./parseSchedule.js")
 const createLogger = require('logging')
-const { UpdateSchedulesInMemory } = require("../periodicEventsHandlers/updateSchedulesEmbed.js")
+const { UpdateSchedulesInMemory, GetExistingName } = require("../periodicEventsHandlers/updateSchedulesEmbed.js")
 
 const logger = createLogger.default('Scheduling Bot')
 
+/**
+ * @param {String} userID 
+ * @param {String} newUserName 
+ */
 async function UpdateUserDisplayName(interaction, userID, newUserName)
 {
     directory = fs.readdirSync("./schedules/")
     searchString = `${userID}.json`
+
+    let existingNames = GetExistingName()
+
+    for (let name of existingNames)
+    {
+        if (newUserName.toLowerCase().includes(name))
+        {
+            await interaction.reply("**Username cannot match already existing name!**")
+            return
+        }
+    }
 
     for (file of directory)
     {
