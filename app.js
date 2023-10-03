@@ -41,7 +41,7 @@ client.on('interactionCreate', async interaction => {
                 await ReplyWithSchedule(interaction, options.get('user'))
                 break
             case 'help':
-                await interaction.reply({ files: [ "./images/uploadingScheduleInfoV1.png" ]})
+                await interaction.reply({ files: [ "./images/uploadingScheduleInfoV2.png" ]})
                 break
             case 'getusers':
                 await ReplyWithLoggedUsers(interaction)

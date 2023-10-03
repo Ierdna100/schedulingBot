@@ -1,6 +1,6 @@
 const { scheduleModal } = require("./modals.js")
 const fs = require('fs')
-const { ParseSchedule, ParseClasses, ParseScheduleV2 } = require("./parseSchedule.js")
+const { ParseScheduleV2 } = require("./parseSchedule.js")
 const createLogger = require('logging')
 const { UpdateSchedulesInMemory } = require("../periodicEventsHandlers/updateSchedulesEmbed.js")
 

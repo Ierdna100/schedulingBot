@@ -70,8 +70,7 @@ function GenerateNewSchedulesEmbed()
     let currentTime = (currentDate.getTime() % (24 * 60 * 60 * 1000))
     let currentTimeInHours = currentTime / 1000 / 60 / 60
     let currentTimeInHoursWithOffset = currentTimeInHours - (currentDate.getTimezoneOffset() / 60)
-    //let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
-    let absoluteTimeInHours = 12
+    let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
     
     let day = currentDate.getDay()
 
@@ -171,7 +170,7 @@ function GenerateNewSchedulesEmbed()
             case CurrentlyDoing.almostEnd:
             case CurrentlyDoing.inClass:
                 // classDefs are off by one in the JSON
-                fieldValue += `**Currently in** __${currentClassName}__\n`
+                fieldValue += `**Currently in** __${currentClassName}__ (${student.schedule[dayKey][courseIndex].rooms[0]})\n`
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
 
                 if (courseIndex + 1 != maxCourseIndex)
