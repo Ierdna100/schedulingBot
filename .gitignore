@@ -3,6 +3,10 @@
 /.env
 /logs/*
 /node_mdoules/*
+/manualParsing/input/*
+/manualParsing/output/*
 
-# keep schedules file
+# keep files
 !./schedules/
+!./manualParsing/input/
+!./manualParsing/output/

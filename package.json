@@ -6,7 +6,8 @@
   "scripts": {
     "run": "node app.js",
     "dev": "nodemon app.js",
-    "reg": "node registerCommands.js"
+    "reg": "node registerCommands.js",
+    "manual": "node ./manualParsing/manualParser.js"
   },
   "repository": {
     "type": "git",
