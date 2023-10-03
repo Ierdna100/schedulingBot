@@ -52,7 +52,7 @@ function UpdateSchedulesInMemory()
     for (filename of directory)
     {
         schedules.push({
-            studentID: `${filename.split(".")[0]}`,
+            userID: `${filename.split(".")[0]}`,
             data: JSON.parse(fs.readFileSync(`./schedules/${filename}`))
         })
     }
@@ -70,7 +70,8 @@ function GenerateNewSchedulesEmbed()
     let currentTime = (currentDate.getTime() % (24 * 60 * 60 * 1000))
     let currentTimeInHours = currentTime / 1000 / 60 / 60
     let currentTimeInHoursWithOffset = currentTimeInHours - (currentDate.getTimezoneOffset() / 60)
-    let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
+    //let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
+    let absoluteTimeInHours = 12
     
     let day = currentDate.getDay()
 
@@ -110,7 +111,7 @@ function GenerateNewSchedulesEmbed()
             continue
         }
 
-        let currentClassID
+        let currentClassName
         let maxCourseIndex = student.schedule[dayKey].length
         let courseIndex = 0 // Our system is 0 indexed, schedules are 1 indexed
         for (course of student.schedule[dayKey])
@@ -122,14 +123,14 @@ function GenerateNewSchedulesEmbed()
                 // If not within 15 minutes of end, then show inClass
                 if (absoluteTimeInHours <= (course.endTime - 0.25))
                 {
-                    currentClassID = course.id
+                    currentClassName = course.className
                     studentStatus = CurrentlyDoing.inClass
                     break
                 }
                 // If within 15 minutes before end, show almostEndOfClass
                 else if (absoluteTimeInHours <= course.endTime)
                 {
-                    currentClassID = course.id
+                    currentClassName = course.className
 
                     // If endTime is dayEndTime, then we are near the day
                     if (course.endTime == student.finishesAt[dayKey])
@@ -170,7 +171,7 @@ function GenerateNewSchedulesEmbed()
             case CurrentlyDoing.almostEnd:
             case CurrentlyDoing.inClass:
                 // classDefs are off by one in the JSON
-                fieldValue += `**Currently in** __${student.classDefinition[currentClassID - 1].name}__\n`
+                fieldValue += `**Currently in** __${currentClassName}__\n`
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
 
                 if (courseIndex + 1 != maxCourseIndex)
@@ -188,7 +189,7 @@ function GenerateNewSchedulesEmbed()
                     }
 
                     // classDefs are off by one in the JSON
-                    fieldValue += `**Next class:** __${student.classDefinition[student.schedule[dayKey][courseIndex].id].name}__\n`
+                    fieldValue += `**Next class: ** __${student.schedule[dayKey][courseIndex + 1].className}__\n`
                     fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex + 1].endTime)}]\`\n`
                     fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 }
@@ -200,7 +201,7 @@ function GenerateNewSchedulesEmbed()
                 fieldValue += `**Currently in break**\n`
                 fieldValue += `**Until:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].startTime)}]\`\n`
                 // classDefs are off by one in the JSON
-                fieldValue += `**Next class:** __${student.classDefinition[student.schedule[dayKey][courseIndex - 1].id].name}__\n`
+                fieldValue += `**Next class:** __${student.schedule[dayKey][courseIndex + 1].className}__\n`
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
                 fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 break
@@ -209,7 +210,7 @@ function GenerateNewSchedulesEmbed()
                 fieldValue += `**Day ended**`
                 break
             default:
-                logger.warn(`Invalid studentStatus for student ${student.displayName} (${schedule.id})`)
+                logger.warn(`Invalid studentStatus for student ${student.displayName} (${schedule.userID})`)
                 fieldValue += `\`\`\`diff\n-Error 500: Internal Server Error\n\`\`\``
         }
 

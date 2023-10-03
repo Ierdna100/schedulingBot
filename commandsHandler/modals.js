@@ -13,13 +13,7 @@ const fields = {
         .setPlaceholder("Your schedule here")
         .setRequired(true)
         .setLabel("Your schedule")
-        .setStyle("Paragraph"),
-    classDefinitions: new TextInputBuilder()
-        .setCustomId("classes")
-        .setPlaceholder("Your classes definitions here")
-        .setRequired(true)
-        .setLabel("Your classes definitions")
-        .setStyle("Paragraph"),
+        .setStyle("Paragraph")
 }
 
 const scheduleModal = new ModalBuilder()
@@ -28,7 +22,6 @@ const scheduleModal = new ModalBuilder()
     .setComponents(
         new ActionRowBuilder().setComponents(fields.username),
         new ActionRowBuilder().setComponents(fields.schedule),
-        new ActionRowBuilder().setComponents(fields.classDefinitions)
     )
 
 module.exports = { scheduleModal }

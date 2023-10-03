@@ -1,6 +1,6 @@
 const { scheduleModal } = require("./modals.js")
 const fs = require('fs')
-const { ParseSchedule, ParseClasses } = require("./parseSchedule.js")
+const { ParseSchedule, ParseClasses, ParseScheduleV2 } = require("./parseSchedule.js")
 const createLogger = require('logging')
 const { UpdateSchedulesInMemory } = require("../periodicEventsHandlers/updateSchedulesEmbed.js")
 
@@ -36,7 +36,7 @@ async function UpdateUserDisplayName(interaction, userID, newUserName)
         }
     }
 
-    interaction.reply("**You don't have a schedule logged in the system, could not update display name.**")
+    await interaction.reply("**You don't have a schedule logged in the system, could not update display name.**")
 }
 
 /**
@@ -69,15 +69,18 @@ async function UploadUserSchedule(interaction, userID, components)
 
     let username = components[0].components[0].value
     let schedule = components[1].components[0].value
-    let classes = components[2].components[0].value
-
-    let numberOfClasses
 
     try
     {
-        schedule = ParseSchedule(schedule)
-        numberOfClasses = schedule.numberOfClasses
-        schedule = schedule.daysClass
+        classDays = ParseScheduleV2(schedule)
+        /* Each class in each day:
+        {
+            className: classTitle,
+            startTime: startTime,
+            endTime: endTime,
+            rooms: rooms
+        }
+        */
     }
     catch (err)
     {
@@ -86,40 +89,31 @@ async function UploadUserSchedule(interaction, userID, components)
         return
     }
 
-    try
-    {
-        classes = ParseClasses(classes, numberOfClasses)
-    }
-    catch (err)
-    {
-        logger.warn(err)
-        interaction.reply("**Invalid class declaration! Please follow the instructions provided by /help**")
-        return
-    }
-
-    // If less classes exist than there should be, then there is a few missing. Otherwise we dont really care and its even useful if someone has classes sat/sun
-    if (classes.length < numberOfClasses)
-    {
-        logger.warn(`Invalid class declaration, the number of parsed classes (${numberOfClasses}) != expected number of classes from schedule (${classes.length}).`)
-        interaction.reply("**Invalid class declaration! Please follow the instructions provided by /help**")
-        return
-    }
-
     let finishesAt = {}
 
-    for (day in daysClass)
+    for (day in classDays)
     {   
-        if (daysClass[day].length != 0)
-            finishesAt[day] = daysClass[day][daysClass[day].length - 1].endTime
+        if (classDays[day].length != 0)
+        {
+            let highestClassEndTime = 0
+            for (course of classDays[day])
+            {
+                if (course.endTime > highestClassEndTime)
+                    highestClassEndTime = course.endTime
+            }
+
+            finishesAt[day] = highestClassEndTime
+        } 
         else
+        {
             finishesAt[day] = null
+        }
     }
 
     let scheduleAsJSON = {
         displayName: username,
         finishesAt: finishesAt,
-        schedule: schedule,
-        classDefinition: classes
+        schedule: classDays,
     }
 
     fs.writeFileSync(`./schedules/${userID}.json`, JSON.stringify(scheduleAsJSON, null, "\t"))
@@ -154,7 +148,7 @@ async function ClearUserSchedule(interaction, userID)
         }
     }
 
-    interaction.reply("**You don't have a schedule logged in the system, could not delete.**")
+    await interaction.reply("**You don't have a schedule logged in the system, could not delete.**")
 }
 
 module.exports = { UpdateUserDisplayName, InitializeScheduleRequest, ClearUserSchedule, UploadUserSchedule }

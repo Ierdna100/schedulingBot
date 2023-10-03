@@ -21,7 +21,7 @@ async function ReplyWithSchedule(interaction, userID)
         }
     }
 
-    interaction.reply(`**No schedules were found for selected user with ID ${userSearchID}**`)
+    await interaction.reply(`**No schedules were found for selected user with ID ${userSearchID}**`)
 }
 
 module.exports = { ReplyWithSchedule }

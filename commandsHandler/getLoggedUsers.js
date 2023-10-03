@@ -1,9 +1,7 @@
 const fs = require('fs')
 
-function ReplyWithLoggedUsers(interaction)
+async function ReplyWithLoggedUsers(interaction)
 {
-    let users = []
-
     directory = fs.readdirSync('./schedules/')
     
     let message = "**Users with an available schedule are:**\n"
@@ -31,7 +29,7 @@ function ReplyWithLoggedUsers(interaction)
         index++
     }
 
-    interaction.reply({content: message, allowedMentions: { users: [], roles: [] }})
+    await interaction.reply({content: message, allowedMentions: { users: [], roles: [] }})
 }
 
 module.exports = { ReplyWithLoggedUsers }
