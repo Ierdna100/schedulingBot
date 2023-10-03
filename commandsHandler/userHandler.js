@@ -149,6 +149,7 @@ async function UploadUserSchedule(interaction, userID, components)
             content: "**Schedule is invalid. No classes were parsed. If you think this was a mistake, contact <@337662083523018753>**",
             allowedMentions: { users: [], roles: [] }
         })
+        return
     }
 
     let scheduleAsJSON = {
