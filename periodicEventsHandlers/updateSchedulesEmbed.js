@@ -57,6 +57,12 @@ function UpdateSchedulesInMemory()
 
         existingNames.push(data.displayName)
 
+        //sort days
+        for (day in data.schedule)
+        {
+            data.schedule[day] = data.schedule[day].sort((a, b) => a.startTime - b.startTime)
+        }
+
         schedules.push({
             userID: `${filename.split(".")[0]}`,
             data: data
@@ -212,7 +218,7 @@ function GenerateNewSchedulesEmbed()
                     fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex + 1].endTime)}]\`\n`
                     fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 }
-                    
+
                 break
             case CurrentlyDoing.almostClass:
                 fieldValue += `**Class starting soon**\n`
@@ -276,7 +282,7 @@ function GenerateNewSchedulesEmbed()
 
 function DecimalHoursToHumanReadable(hours)
 {
-    return `${Math.floor(hours)}`.padEnd(2, "0") + ":" + `${Math.floor((hours % 1) * 60)}`.padEnd(2, "0")
+    return `${Math.floor(hours)}`.padStart(2, "0") + ":" + `${Math.floor((hours % 1) * 60)}`.padStart(2, "0")
 }
 
 module.exports = { GenerateNewSchedulesEmbed, UpdateSchedulesInMemory, GetExistingName }
