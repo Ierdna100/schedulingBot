@@ -29,21 +29,27 @@ client.on('interactionCreate', async interaction => {
 
         switch (interaction.commandName) {
             case 'setdisplayname':
+                logger.info(`User <@${userID}> entered command 'setdisplayname'`)
                 await UpdateUserDisplayName(interaction, userID, options.get('name'))
                 break
             case 'uploadschedule':
+                logger.info(`User <@${userID}> entered command 'uploadschedule'`)
                 await InitializeScheduleRequest(interaction)
                 break
             case 'clearschedule':
+                logger.info(`User <@${userID}> entered command 'clearschedule'`)
                 await ClearUserSchedule(interaction, userID)
                 break
             case 'getschedule':
+                logger.info(`User <@${userID}> entered command 'getschedule'`)
                 await ReplyWithSchedule(interaction, options.get('user'))
                 break
             case 'help':
+                logger.info(`User <@${userID}> entered command 'help'`)
                 await interaction.reply({ files: [ "./images/uploadingScheduleInfoV2.png" ]})
                 break
             case 'getusers':
+                logger.info(`User <@${userID}> entered command 'getusers'`)
                 await ReplyWithLoggedUsers(interaction)
                 break
             default:
@@ -57,6 +63,7 @@ client.on('interactionCreate', async interaction => {
 
         if (interaction.customId == "schedule_modal")
         {
+            logger.info(`User <@${userID}> submitted modal 'schedule_modal'`)
             UploadUserSchedule(interaction, userID, components)
         }
     }

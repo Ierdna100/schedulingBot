@@ -46,6 +46,8 @@ const MonthsOfTheYear = {
 
 function UpdateSchedulesInMemory()
 {
+    logger.info(`Updated schedules in memory!`)
+
     schedules = []
     existingNames = []
 

@@ -21,6 +21,7 @@ async function UpdateUserDisplayName(interaction, userID, newUserName)
     {
         if (newUserName.value.toLowerCase().includes(name.toLowerCase().replaceAll(" ", "")))
         {
+            logger.warn(`User <${userID}> attempted to replace name but could not override existing name!`)
             await interaction.reply("**Username cannot match already existing name!**")
             return
         }
@@ -37,6 +38,7 @@ async function UpdateUserDisplayName(interaction, userID, newUserName)
                 fileData.displayName = newUserName.value
                 fs.writeFileSync(`./schedules/${file}`, JSON.stringify(fileData, null, "\t"))
                 
+                logger.info(`Replaced display name of user <@${userID}>`)
                 interaction.reply(`**Successfully replaced display name!**`)
 
                 UpdateSchedulesInMemory()
@@ -45,12 +47,14 @@ async function UpdateUserDisplayName(interaction, userID, newUserName)
             }
             else
             {
+                logger.error(`${file} has an invalid JSON format!`)
                 interaction.reply(`\`\`\`\nReferenceException: ${file} has an invalid JSON format.\n\tat userHandler.js\n\tat UpdateUserDisplayName()\`\`\``)
                 return
             }
         }
     }
 
+    logger.info(`<@${userID}> attempted to update display name but doesn't have a schedule registered.`)
     await interaction.reply("**You don't have a schedule logged in the system, could not update display name.**")
 }
 
@@ -59,6 +63,7 @@ async function UpdateUserDisplayName(interaction, userID, newUserName)
  */
 async function InitializeScheduleRequest(interaction)
 {
+    logger.info(`Responded with modal`)
     await interaction.showModal(scheduleModal)
 }
 
@@ -86,14 +91,18 @@ async function UploadUserSchedule(interaction, userID, components)
     let username = components[0].components[0].value
     let schedule = components[1].components[0].value
 
+    // log schedules in case people want to fuck over the bot
+    /**@type Date */
+    let currentDateForLog = new Date()
+    fs.writeFileSync(`./logSchedules/${currentDateForLog.toISOString().replaceAll(":","-")}_${userID}.txt`, schedule.toString())
+
     // Ensure no duplicate names exist
     let existingNames = GetExistingName()
-    console.log(existingNames)
-    console.log(`USERNAME: ${username}`)
     for (let name of existingNames)
     {
-        if (username.toLowerCase().includes(name.toLowerCase().replaceAll(" ", "")))
+        if (username.toLowerCase().includes(name.toLowerCase().replaceAll(" ", "-")))
         {
+            logger.warn(`<@${userID}> attempted to upload schedule with display name ${username}, which already exists!`)
             await interaction.reply("**Username cannot match already existing name!**")
             return
         }
@@ -147,6 +156,7 @@ async function UploadUserSchedule(interaction, userID, components)
 
     if (!hasAtLeastOneValidClass)
     {
+        logger.info(`<@${userID} uploaded an invalid schedule. Schedule can be seen at ./uploadedSchedules`)
         await interaction.reply({
             content: "**Schedule is invalid. No classes were parsed. If you think this was a mistake, contact <@337662083523018753>**",
             allowedMentions: { users: [], roles: [] }
@@ -166,10 +176,12 @@ async function UploadUserSchedule(interaction, userID, components)
 
     if (userExists)
     {
+        logger.info(`User <@${userID}> replaced old schedule`)
         interaction.reply("**Successfully replaced old schedule!**")
     }
     else
     {
+        logger.info(`User <@${userID}> uploaded new schedule`)
         interaction.reply("**Successfully uploaded new schedule!**")
     }
 }
@@ -184,6 +196,7 @@ async function ClearUserSchedule(interaction, userID)
         if (file == searchString)
         {
             fs.unlinkSync(`./schedules/${file}`)
+            logger.info(`User <@${userID}> deleted their schedule`)
             interaction.reply(`**Successfully deleted your schedule!**`)
 
             UpdateSchedulesInMemory()
@@ -192,6 +205,7 @@ async function ClearUserSchedule(interaction, userID)
         }
     }
 
+    logger.info(`User <@${userID}> attempted to delete schedule but doesn't have one logged.`)
     await interaction.reply("**You don't have a schedule logged in the system, could not delete.**")
 }
 

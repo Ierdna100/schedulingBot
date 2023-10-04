@@ -5,8 +5,9 @@
 /node_mdoules/*
 /manualParsing/input/*
 /manualParsing/output/*
+/logSchedules/*
 
 # keep files
-!./schedules/
-!./manualParsing/input/
-!./manualParsing/output/
+!/logSchedules/
+!/manualParsing/input/
+!/manualParsing/output/
