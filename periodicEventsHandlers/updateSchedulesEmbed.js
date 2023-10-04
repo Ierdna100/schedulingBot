@@ -5,6 +5,7 @@ require('dotenv').config()
 const logger = createLogger.default('Scheduling Bot')
 
 let schedules = []
+let existingNames = []
 
 /**@enum */
 const Weekdays = {
@@ -46,16 +47,32 @@ const MonthsOfTheYear = {
 function UpdateSchedulesInMemory()
 {
     schedules = []
+    existingNames = []
 
     directory = fs.readdirSync("./schedules/")
 
     for (filename of directory)
     {
+        let data = JSON.parse(fs.readFileSync(`./schedules/${filename}`))
+
+        existingNames.push(data.displayName)
+
+        //sort days
+        for (day in data.schedule)
+        {
+            data.schedule[day] = data.schedule[day].sort((a, b) => a.startTime - b.startTime)
+        }
+
         schedules.push({
             userID: `${filename.split(".")[0]}`,
-            data: JSON.parse(fs.readFileSync(`./schedules/${filename}`))
+            data: data
         })
     }
+}
+
+function GetExistingName()
+{
+    return existingNames
 }
 
 function GenerateNewSchedulesEmbed()
@@ -114,7 +131,7 @@ function GenerateNewSchedulesEmbed()
         let currentCourse
         let nextCourse
         let maxCourseIndex = student.schedule[dayKey].length
-        let courseIndex = 0 // Our system is 0 indexed, schedules are 1 indexed
+        let courseIndex = 0
         for (course of student.schedule[dayKey])
         {
             // If we are over the start time
@@ -189,7 +206,16 @@ function GenerateNewSchedulesEmbed()
             case CurrentlyDoing.almostEnd:
             case CurrentlyDoing.inClass:
                 // classDefs are off by one in the JSON
-                fieldValue += `**Currently in** __${currentClassName}__ (${student.schedule[dayKey][courseIndex].rooms[0]})\n`
+                fieldValue += `**Currently in** __${currentClassName}__`
+                let rooms = student.schedule[dayKey][courseIndex].rooms
+                if (rooms == undefined)
+                {
+                    fieldValue += "\n"
+                }
+                else
+                {
+                    fieldValue += ` (${rooms[0]})\n`
+                }
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
 
                 if (courseIndex + 1 != maxCourseIndex)
@@ -211,7 +237,7 @@ function GenerateNewSchedulesEmbed()
                     fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex + 1].endTime)}]\`\n`
                     fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 }
-                    
+
                 break
             case CurrentlyDoing.almostClass:
                 fieldValue += `**Class starting soon**\n`
@@ -219,7 +245,7 @@ function GenerateNewSchedulesEmbed()
                 fieldValue += `**Currently in break**\n`
                 fieldValue += `**Until:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].startTime)}]\`\n`
                 // classDefs are off by one in the JSON
-                fieldValue += `**Next class:** __${student.schedule[dayKey][courseIndex + 1].className}__\n`
+                fieldValue += `**Next class:** __${student.schedule[dayKey][courseIndex].className}__\n`
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
                 fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 break
@@ -275,7 +301,7 @@ function GenerateNewSchedulesEmbed()
 
 function DecimalHoursToHumanReadable(hours)
 {
-    return `${Math.floor(hours)}`.padEnd(2, "0") + ":" + `${Math.floor((hours % 1) * 60)}`.padEnd(2, "0")
+    return `${Math.floor(hours)}`.padStart(2, "0") + ":" + `${Math.floor((hours % 1) * 60)}`.padStart(2, "0")
 }
 
-module.exports = { GenerateNewSchedulesEmbed, UpdateSchedulesInMemory }
+module.exports = { GenerateNewSchedulesEmbed, UpdateSchedulesInMemory, GetExistingName }

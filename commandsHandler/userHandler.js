@@ -2,14 +2,29 @@ const { scheduleModal } = require("./modals.js")
 const fs = require('fs')
 const { ParseScheduleV2 } = require("./parseSchedule.js")
 const createLogger = require('logging')
-const { UpdateSchedulesInMemory } = require("../periodicEventsHandlers/updateSchedulesEmbed.js")
+const { UpdateSchedulesInMemory, GetExistingName } = require("../periodicEventsHandlers/updateSchedulesEmbed.js")
 
 const logger = createLogger.default('Scheduling Bot')
 
+/**
+ * @param {String} userID 
+ * @param {String} newUserName 
+ */
 async function UpdateUserDisplayName(interaction, userID, newUserName)
 {
     directory = fs.readdirSync("./schedules/")
     searchString = `${userID}.json`
+
+    let existingNames = GetExistingName()
+
+    for (let name of existingNames)
+    {
+        if (newUserName.toLowerCase().includes(name))
+        {
+            await interaction.reply("**Username cannot match already existing name!**")
+            return
+        }
+    }
 
     for (file of directory)
     {
@@ -56,6 +71,7 @@ async function UploadUserSchedule(interaction, userID, components)
 
     let userExists = false
 
+    // see if user already exists
     for (file of directory)
     {
         filename = file.split(".")[0]
@@ -70,17 +86,21 @@ async function UploadUserSchedule(interaction, userID, components)
     let username = components[0].components[0].value
     let schedule = components[1].components[0].value
 
+    // Ensure no duplicate names exist
+    let existingNames = GetExistingName()
+    for (let name of existingNames)
+    {
+        if (username.toLowerCase().includes(name))
+        {
+            await interaction.reply("**Username cannot match already existing name!**")
+            return
+        }
+    }
+
+    // try and parse schedule
     try
     {
         classDays = ParseScheduleV2(schedule)
-        /* Each class in each day:
-        {
-            className: classTitle,
-            startTime: startTime,
-            endTime: endTime,
-            rooms: rooms
-        }
-        */
     }
     catch (err)
     {
@@ -91,6 +111,7 @@ async function UploadUserSchedule(interaction, userID, components)
 
     let finishesAt = {}
 
+    // get end times
     for (day in classDays)
     {   
         if (classDays[day].length != 0)
@@ -108,6 +129,27 @@ async function UploadUserSchedule(interaction, userID, components)
         {
             finishesAt[day] = null
         }
+    }
+
+    let hasAtLeastOneValidClass = false
+
+    // safety check
+    for (day in classDays)
+    {
+        if (finishesAt[day] != null)
+        {
+            hasAtLeastOneValidClass = true
+            break
+        }
+    }
+
+    if (!hasAtLeastOneValidClass)
+    {
+        await interaction.reply({
+            content: "**Schedule is invalid. No classes were parsed. If you think this was a mistake, contact <@337662083523018753>**",
+            allowedMentions: { users: [], roles: [] }
+        })
+        return
     }
 
     let scheduleAsJSON = {

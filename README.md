@@ -21,3 +21,6 @@ UPDATE_MESSAGE_ID=
 
 Running server:
 `npm run run` or `node app.js`
+
+Manual parsing of backed data:
+`npm run manual`
