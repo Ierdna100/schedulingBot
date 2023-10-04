@@ -107,7 +107,7 @@ async function UpdateSchedules() {
         }
     }
 
-    setTimeout(UpdateSchedules, 10000)
+    setTimeout(UpdateSchedules, 120000)
 }
 
 function ResetMessageIDInfo()
