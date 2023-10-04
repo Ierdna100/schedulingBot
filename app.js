@@ -5,6 +5,7 @@ const { AddVariableToEnvFile } = require('./envManager.js')
 const { UpdateUserDisplayName, InitializeScheduleRequest, ClearUserSchedule, UploadUserSchedule } = require('./commandsHandler/userHandler.js')
 const { ReplyWithSchedule } = require('./commandsHandler/getScheduleHandler.js')
 const { ReplyWithLoggedUsers } = require('./commandsHandler/getLoggedUsers.js')
+const { GetScheduleFormatted } = require('./commandsHandler/getScheduleFormatted.js')
 require('dotenv').config()
 
 /**@type Channel */
@@ -42,6 +43,10 @@ client.on('interactionCreate', async interaction => {
                 break
             case 'getschedule':
                 logger.info(`User <@${userID}> entered command 'getschedule'`)
+                await GetScheduleFormatted(interaction, options.get('user'))
+                break
+            case 'getschedulejson':
+                logger.info(`User <@${userID}> entered command 'getschedulejson'`)
                 await ReplyWithSchedule(interaction, options.get('user'))
                 break
             case 'help':

@@ -78,13 +78,24 @@ function ParseClassElement(classTitle, element)
     let endTime = element[3].split(":")
     endTime = parseInt(endTime[0]) + parseFloat(endTime[1]) / 60
 
-    let rooms = element[5]?.split(";")
-
-    return {
-        className: classTitle,
-        startTime: startTime,
-        endTime: endTime,
-        rooms: rooms
+    // edge case where there are no rooms but text after anyway
+    let rooms = []
+    if (element[4] == "local")
+    {
+        return {
+            className: classTitle,
+            startTime: startTime,
+            endTime: endTime,
+            rooms: element[5]?.split(";")
+        }
+    }
+    else
+    {
+        return {
+            className: classTitle,
+            startTime: startTime,
+            endTime: endTime
+        }
     }
 }
 
