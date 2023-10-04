@@ -70,7 +70,8 @@ function GenerateNewSchedulesEmbed()
     let currentTime = (currentDate.getTime() % (24 * 60 * 60 * 1000))
     let currentTimeInHours = currentTime / 1000 / 60 / 60
     let currentTimeInHoursWithOffset = currentTimeInHours - (currentDate.getTimezoneOffset() / 60)
-    let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
+    //let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
+    let absoluteTimeInHours = 12
     
     let day = currentDate.getDay()
 
@@ -110,7 +111,8 @@ function GenerateNewSchedulesEmbed()
             continue
         }
 
-        let currentClassName
+        let currentCourse
+        let nextCourse
         let maxCourseIndex = student.schedule[dayKey].length
         let courseIndex = 0 // Our system is 0 indexed, schedules are 1 indexed
         for (course of student.schedule[dayKey])
@@ -122,14 +124,14 @@ function GenerateNewSchedulesEmbed()
                 // If not within 15 minutes of end, then show inClass
                 if (absoluteTimeInHours <= (course.endTime - 0.25))
                 {
-                    currentClassName = course.className
+                    currentCourse = course
                     studentStatus = CurrentlyDoing.inClass
                     break
                 }
                 // If within 15 minutes before end, show almostEndOfClass
                 else if (absoluteTimeInHours <= course.endTime)
                 {
-                    currentClassName = course.className
+                    currentCourse = course
 
                     // If endTime is dayEndTime, then we are near the day
                     if (course.endTime == student.finishesAt[dayKey])
@@ -163,6 +165,23 @@ function GenerateNewSchedulesEmbed()
         }
 
         let fieldValue = ""
+
+        nextCourse = student.schedule[dayKey][courseIndex + 1]
+
+        /*
+        const CurrentlyDoing = {
+            inClass: 1,
+            almostClass: 2,
+            inBreak: 3,
+            almostBreak: 4,
+            finishedDay: 5,
+            almostEnd: 6
+        }
+        */
+        console.log(student.displayName)
+        console.log(studentStatus)
+        console.log(currentCourse)
+        console.log(nextCourse)
 
         switch (studentStatus)
         {
