@@ -87,8 +87,7 @@ function GenerateNewSchedulesEmbed()
     let currentTime = (currentDate.getTime() % (24 * 60 * 60 * 1000))
     let currentTimeInHours = currentTime / 1000 / 60 / 60
     let currentTimeInHoursWithOffset = currentTimeInHours - (currentDate.getTimezoneOffset() / 60)
-    //let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
-    let absoluteTimeInHours = 12
+    let absoluteTimeInHours = (currentTimeInHoursWithOffset + 24) % 24
     
     let day = currentDate.getDay()
 
@@ -128,8 +127,6 @@ function GenerateNewSchedulesEmbed()
             continue
         }
 
-        let currentCourse
-        let nextCourse
         let maxCourseIndex = student.schedule[dayKey].length
         let courseIndex = 0
         for (course of student.schedule[dayKey])
@@ -141,22 +138,18 @@ function GenerateNewSchedulesEmbed()
                 // If not within 15 minutes of end, then show inClass
                 if (absoluteTimeInHours <= (course.endTime - 0.25))
                 {
-                    currentCourse = course
                     studentStatus = CurrentlyDoing.inClass
                     break
                 }
                 // If within 15 minutes before end, show almostEndOfClass
                 else if (absoluteTimeInHours <= course.endTime)
                 {
-                    currentCourse = course
-
                     // If endTime is dayEndTime, then we are near the day
                     if (course.endTime == student.finishesAt[dayKey])
                         studentStatus = CurrentlyDoing.almostEnd
                     // Else, near break
                     else
                         studentStatus = CurrentlyDoing.almostBreak
-
                     break
                 }
                 // Else, check other class
@@ -183,31 +176,30 @@ function GenerateNewSchedulesEmbed()
 
         let fieldValue = ""
 
+        let currentCourse
+        let nextCourse
+
         nextCourse = student.schedule[dayKey][courseIndex + 1]
 
-        /*
-        const CurrentlyDoing = {
-            inClass: 1,
-            almostClass: 2,
-            inBreak: 3,
-            almostBreak: 4,
-            finishedDay: 5,
-            almostEnd: 6
-        }
-        */
-        console.log(student.displayName)
-        console.log(studentStatus)
-        console.log(currentCourse)
-        console.log(nextCourse)
+       // if in break, then courseIndex indicates nextclass
+       if (studentStatus == CurrentlyDoing.inBreak || studentStatus == CurrentlyDoing.almostClass)
+       {
+            nextCourse = student.schedule[dayKey][courseIndex]
+       }
+       // If not in break, then courseIndex indicates class, + 1 indicates nextClass
+       else
+       {
+            currentCourse = student.schedule[dayKey][courseIndex]
+            nextCourse = student.schedule[dayKey][courseIndex + 1]
+       }
 
         switch (studentStatus)
         {
             case CurrentlyDoing.almostBreak:
             case CurrentlyDoing.almostEnd:
             case CurrentlyDoing.inClass:
-                // classDefs are off by one in the JSON
-                fieldValue += `**Currently in** __${currentClassName}__`
-                let rooms = student.schedule[dayKey][courseIndex].rooms
+                fieldValue += `**Currently in** __${currentCourse.className}__`
+                let rooms = currentCourse.rooms
                 if (rooms == undefined)
                 {
                     fieldValue += "\n"
@@ -216,25 +208,24 @@ function GenerateNewSchedulesEmbed()
                 {
                     fieldValue += ` (${rooms[0]})\n`
                 }
-                fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
+                fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(currentCourse.endTime)}]\`\n`
 
-                if (courseIndex + 1 != maxCourseIndex)
+                if (courseIndex != maxCourseIndex - 1)
                 {
-                    let previousCourse = student.schedule[dayKey][courseIndex]
-                    for (let i = (courseIndex + 1); i < student.schedule[dayKey].length; i++)
+                    let previousCourse = currentCourse
+                    for (let i = (courseIndex + 1); i < maxCourseIndex; i++)
                     {
-                        let currentCourse = student.schedule[dayKey][i]
+                        let currentCourseToCheck = student.schedule[dayKey][i]
 
-                        if (currentCourse.startTime != previousCourse.endTime)
+                        if (currentCourseToCheck.startTime != previousCourse.endTime)
                         {
                             fieldValue += `**Next break:** \`[${DecimalHoursToHumanReadable(previousCourse.endTime)}]\`\n`
                             break
                         }
                     }
 
-                    // classDefs are off by one in the JSON
-                    fieldValue += `**Next class: ** __${student.schedule[dayKey][courseIndex + 1].className}__\n`
-                    fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex + 1].endTime)}]\`\n`
+                    fieldValue += `**Next class: ** __${nextCourse.className}__\n`
+                    fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(nextCourse.endTime)}]\`\n`
                     fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 }
 
@@ -243,10 +234,9 @@ function GenerateNewSchedulesEmbed()
                 fieldValue += `**Class starting soon**\n`
             case CurrentlyDoing.inBreak:
                 fieldValue += `**Currently in break**\n`
-                fieldValue += `**Until:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].startTime)}]\`\n`
-                // classDefs are off by one in the JSON
-                fieldValue += `**Next class:** __${student.schedule[dayKey][courseIndex].className}__\n`
-                fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(student.schedule[dayKey][courseIndex].endTime)}]\`\n`
+                fieldValue += `**Until:** \`[${DecimalHoursToHumanReadable(nextCourse.startTime)}]\`\n`
+                fieldValue += `**Next class:** __${nextCourse.className}__\n`
+                fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(nextCourse.endTime)}]\`\n`
                 fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 break
             // Not technically used

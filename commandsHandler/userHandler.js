@@ -19,7 +19,7 @@ async function UpdateUserDisplayName(interaction, userID, newUserName)
 
     for (let name of existingNames)
     {
-        if (newUserName.toLowerCase().includes(name))
+        if (newUserName.value.toLowerCase().includes(name.toLowerCase().replaceAll(" ", "")))
         {
             await interaction.reply("**Username cannot match already existing name!**")
             return
@@ -88,9 +88,11 @@ async function UploadUserSchedule(interaction, userID, components)
 
     // Ensure no duplicate names exist
     let existingNames = GetExistingName()
+    console.log(existingNames)
+    console.log(`USERNAME: ${username}`)
     for (let name of existingNames)
     {
-        if (username.toLowerCase().includes(name))
+        if (username.toLowerCase().includes(name.toLowerCase().replaceAll(" ", "")))
         {
             await interaction.reply("**Username cannot match already existing name!**")
             return
@@ -105,7 +107,7 @@ async function UploadUserSchedule(interaction, userID, components)
     catch (err)
     {
         logger.warn(err)
-        interaction.reply("**Invalid schedule declaration! Please follow the instructions provided by /help**")
+        interaction.reply("**Invalid schedule declaration! Please follow the instructions provided by /help. Note that you cannot upload schedule from a mobile device, as the formatting is wrong on them.**")
         return
     }
 
