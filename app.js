@@ -43,7 +43,7 @@ client.on('ready', () => {
     }
 
     UpdateSchedules()
-    //test
+    
 })
 
 client.on('interactionCreate', async interaction => {
