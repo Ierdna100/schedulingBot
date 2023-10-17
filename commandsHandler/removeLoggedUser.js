@@ -21,7 +21,7 @@ async function RemoveLoggedUser(interaction, opID, userID)
     }
 
     logger.info(`User <${opID}> tried to delete user with ID ${userID}.`)
-    await interaction.reply(`**User <@${userID}> doesn't have a schedule logged in the system, could not delete schedule.**`)
+    await interaction.reply({allowedMentions: { users: [], roles: [] }, content: `**User <@${userID}> doesn't have a schedule logged in the system, could not delete schedule.**`})
 }
 
 module.exports = { RemoveLoggedUser }
