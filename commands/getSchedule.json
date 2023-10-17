@@ -6,7 +6,7 @@
             "type": 6,
             "name": "user",
             "description": "User to fetch schedule file from.",
-            "required": true
+            "required": false
         }
     ]
 }

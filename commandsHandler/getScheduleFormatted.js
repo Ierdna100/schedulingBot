@@ -1,9 +1,12 @@
 const fs = require('fs')
 const { scheduleModal } = require('./modals')
 
-async function GetScheduleFormatted(interaction, userID)
+async function GetScheduleFormatted(interaction, opID, userID)
 {
-    userSearchID = userID.value
+    if (userID != null)
+        userSearchID = userID.value
+    else
+        userSearchID = opID
     
     directory = fs.readdirSync('./schedules')
 

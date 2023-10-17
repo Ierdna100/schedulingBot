@@ -1,8 +1,11 @@
 const fs = require('fs')
 
-async function ReplyWithSchedule(interaction, userID)
+async function ReplyWithSchedule(interaction, opID, userID)
 {
-    userSearchID = userID.value
+    if (userID != null)
+        userSearchID = userID.value
+    else
+        userSearchID = opID
     
     directory = fs.readdirSync('./schedules')
 

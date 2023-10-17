@@ -6,6 +6,8 @@ const { UpdateUserDisplayName, InitializeScheduleRequest, ClearUserSchedule, Upl
 const { ReplyWithSchedule } = require('./commandsHandler/getScheduleHandler.js')
 const { ReplyWithLoggedUsers } = require('./commandsHandler/getLoggedUsers.js')
 const { GetScheduleFormatted } = require('./commandsHandler/getScheduleFormatted.js')
+const { RemoveLoggedUser } = require('./commandsHandler/removeLoggedUser.js')
+const { BanlistHandler } = require('./commandsHandler/banListHandler.js')
 require('dotenv').config()
 
 /**@type Channel */
@@ -18,6 +20,7 @@ client.on('ready', () => {
     updateChannel = client.channels.cache.get(process.env.UPDATE_CHANNEL_ID)
 
     logger.info(`Websocket ready and connected as: ${client.user.tag}`)
+    logger.info(`Update rate is ${process.env.UPDATE_RATE_SECONDS} seconds.`)
 
     UpdateSchedules()
 })
@@ -43,11 +46,11 @@ client.on('interactionCreate', async interaction => {
                 break
             case 'getschedule':
                 logger.info(`User <@${userID}> entered command 'getschedule'`)
-                await GetScheduleFormatted(interaction, options.get('user'))
+                await GetScheduleFormatted(interaction, userID, options.get('user'))
                 break
             case 'getschedulejson':
                 logger.info(`User <@${userID}> entered command 'getschedulejson'`)
-                await ReplyWithSchedule(interaction, options.get('user'))
+                await ReplyWithSchedule(interaction, userID, options.get('user'))
                 break
             case 'help':
                 logger.info(`User <@${userID}> entered command 'help'`)
@@ -57,7 +60,16 @@ client.on('interactionCreate', async interaction => {
                 logger.info(`User <@${userID}> entered command 'getusers'`)
                 await ReplyWithLoggedUsers(interaction)
                 break
+            case 'removeuser':
+                logger.info(`User <@${userID}> entered command 'removeuser'`)
+                await RemoveLoggedUser(interaction, userID, options.get('user'))
+                break
+            case 'banlist':
+                logger.info(`User <@${userID}> entered command 'removeuser'`)
+                await BanlistHandler(interaction, userID, options.getSubcommand(), options.get('user'))
+                break
             default:
+                logger.warn(`Command ${interaction.commandName} is not handled!`)
                 await interaction.reply({ content: "`501 - Not Implemented`" })
         }
     }
@@ -107,7 +119,7 @@ async function UpdateSchedules() {
         }
     }
 
-    setTimeout(UpdateSchedules, 10000)
+    setTimeout(UpdateSchedules, process.env.UPDATE_RATE_SECONDS * 1000)
 }
 
 function ResetMessageIDInfo()

@@ -1,0 +1,38 @@
+{
+    "default_member_permissions": 8,
+    "name": "banlist",
+    "description": "Manages banlist.",
+    "options": [
+        {
+            "type": 1,
+            "name": "add",
+            "description": "Add user to banlist",
+            "options": [
+                {
+                    "type": 6,
+                    "name": "user",
+                    "description": "User to add",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "remove",
+            "description": "Remove user from banlist",
+            "options": [
+                {
+                    "type": 6,
+                    "name": "user",
+                    "description": "User to remove",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "type": 1,
+            "name": "get",
+            "description": "Gets the banlist."
+        }
+    ]
+}
