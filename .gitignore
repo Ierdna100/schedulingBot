@@ -7,6 +7,3 @@
 /manualParsing/output/*
 /logSchedules/*
 /outputlog.txt
-
-# keep files
-!/logSchedules/

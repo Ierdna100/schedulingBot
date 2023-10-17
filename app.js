@@ -17,13 +17,33 @@ let messageReference = undefined;
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 const logger = createLogger.default('Scheduling Bot')
 
+if (!process.env.TOKEN 
+    || !process.env.CLIENT_ID 
+    || !process.env.UPDATE_CHANNEL_ID)
+{
+    logger.error(".env file is missing Token, client ID or channel ID. Fill those in!")
+    return
+}
+
 client.on('ready', () => {
     updateChannel = client.channels.cache.get(process.env.UPDATE_CHANNEL_ID)
 
+    updateChannel.send(`<@337662083523018753> server started`)
+
     logger.info(`Websocket ready and connected as: ${client.user.tag}`)
-    logger.info(`Update rate is ${process.env.UPDATE_RATE_SECONDS} seconds.`)
+    
+    if (!process.env.UPDATE_RATE_SECONDS)
+    {
+        process.env.UPDATE_RATE_SECONDS = 120
+        logger.warn(`Update rate is not defined in .env file. Defaulting to 120 seconds (2 minutes)`)
+    }
+    else
+    {
+        logger.info(`Update rate is ${process.env.UPDATE_RATE_SECONDS} seconds.`)
+    }
 
     UpdateSchedules()
+    //test
 })
 
 client.on('interactionCreate', async interaction => {
