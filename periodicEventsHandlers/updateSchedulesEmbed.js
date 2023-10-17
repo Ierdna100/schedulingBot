@@ -59,7 +59,7 @@ function UpdateSchedulesInMemory()
     {
         let data = JSON.parse(fs.readFileSync(`./schedules/${filename}`))
 
-        existingNames.push(data.displayName)
+        existingNames.push({userid: filename.split(".")[0], name: data.displayName})
 
         //sort days
         for (day in data.schedule)

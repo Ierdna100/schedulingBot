@@ -17,9 +17,12 @@ async function UpdateUserDisplayName(interaction, userID, newUserName)
 
     let existingNames = GetExistingName()
 
-    for (let name of existingNames)
+    for (let person of existingNames)
     {
-        if (newUserName.value.toLowerCase().includes(name.toLowerCase().replaceAll(" ", "")))
+        // Do not check for own's username
+        if (person.userid == userID) continue
+        
+        if (newUserName.value.toLowerCase().includes(person.name.toLowerCase().replaceAll(" ", "")))
         {
             logger.warn(`User <${userID}> attempted to replace name but could not override existing name!`)
             await interaction.reply("**Username cannot match already existing name!**")
@@ -98,9 +101,11 @@ async function UploadUserSchedule(interaction, userID, components)
 
     // Ensure no duplicate names exist
     let existingNames = GetExistingName()
-    for (let name of existingNames)
+    for (let person of existingNames)
     {
-        if (username.toLowerCase().includes(name.toLowerCase().replaceAll(" ", "-")))
+        if (person.userid == userID) continue
+
+        if (username.toLowerCase().includes(person.name.toLowerCase().replaceAll(" ", "-")))
         {
             logger.warn(`<@${userID}> attempted to upload schedule with display name ${username}, which already exists!`)
             await interaction.reply("**Username cannot match already existing name!**")
