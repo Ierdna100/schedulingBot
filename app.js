@@ -74,12 +74,12 @@ client.on('interactionCreate', async interaction => {
             case 'removeschedule':
                 if (!isOp)
                 {
-                    logger.info(`User <@${userID}> cannot use command 'removeuser': not admin`)
+                    logger.info(`User <@${userID}> cannot use command 'removeschedule': not admin`)
                     await interaction.reply("**You cannot remove user from board: you are not an admin**")
                     return
                 }
 
-                logger.info(`User <@${userID}> entered command 'removeuser'`)
+                logger.info(`User <@${userID}> entered command 'removeschedule'`)
                 await RemoveLoggedUser(interaction, userID, options.get('user'))
                 break
             case 'banlist':
