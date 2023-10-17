@@ -293,7 +293,7 @@ function GenerateNewSchedulesEmbed()
         })
     }
 
-    currentDateStr = ""
+    let currentDateStr = ""
     currentDateStr += `${currentDate.getDate()}`
     
     switch(currentDate.getDate() % 10)
