@@ -10,5 +10,3 @@
 
 # keep files
 !/logSchedules/
-!/manualParsing/input/
-!/manualParsing/output/
