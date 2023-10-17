@@ -15,7 +15,8 @@ UPDATE_MESSAGE_ID=
 
 ## Setup:
 1. Make sure to generate a `schedules` folder in the root if git decides its a good day not to include it
-2. Generate a `logSchedules` folder.
+2. Generate a `logSchedules` folder
+3. Generate a `outputlog.txt` file
 3. Fill in .env file
 4. Install node modules with `npm install`
 5. Register commands if new bot with `npm run reg`
