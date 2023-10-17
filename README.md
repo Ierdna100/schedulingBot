@@ -8,6 +8,7 @@ empty `.env` file:
 TOKEN=
 CLIENT_ID=
 UPDATE_CHANNEL_ID=
+UPDATE_RATE_SECONDS=
 
 # Leave blank
 UPDATE_MESSAGE_ID=
