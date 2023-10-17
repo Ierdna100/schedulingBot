@@ -5,9 +5,9 @@ require('dotenv').config()
 
 const logger = createLogger.default('registerCommands.js')
 
-main()
+Main()
 
-async function main()
+async function Main()
 {
     let commands = []
 
