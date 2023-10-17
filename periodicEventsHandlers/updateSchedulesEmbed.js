@@ -198,7 +198,10 @@ function GenerateNewSchedulesEmbed()
         nextCourse = student.schedule[dayKey][courseIndex + 1]
 
         // if in break, then courseIndex indicates nextclass
-        if (studentStatus == CurrentlyDoing.inBreak || studentStatus == CurrentlyDoing.almostClass)
+        if (studentStatus == CurrentlyDoing.inBreak 
+            || studentStatus == CurrentlyDoing.almostClass
+            || studentStatus == CurrentlyDoing.hasAlmostBegun
+            || studentStatus == CurrentlyDoing.hasNotBegun)
         {
             nextCourse = student.schedule[dayKey][courseIndex]
         }
@@ -272,7 +275,7 @@ function GenerateNewSchedulesEmbed()
             case CurrentlyDoing.hasAlmostBegun:
                 fieldValue += `**Class starting soon**\n`
             case CurrentlyDoing.hasNotBegun:
-                fieldValue += `**Has not began classes yet**\n`
+                fieldValue += `**Has not begun yet**\n`
                 fieldValue += `**Starts at:** \`[${DecimalHoursToHumanReadable(nextCourse.startTime)}]\`\n`
                 fieldValue += `**Starts with:** __${nextCourse.className}__\n`
                 fieldValue += `**Ends class at:** \`[${DecimalHoursToHumanReadable(nextCourse.endTime)}]\`\n`

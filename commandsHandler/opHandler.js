@@ -1,3 +1,5 @@
+const fs = require("fs")
+
 function IsUserOp(searchID)
 {
     currentlyOppedUsers = JSON.parse(fs.readFileSync("./permissions/opUsers.json"))

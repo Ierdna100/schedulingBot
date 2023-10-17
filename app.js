@@ -8,6 +8,7 @@ const { ReplyWithLoggedUsers } = require('./commandsHandler/getLoggedUsers.js')
 const { GetScheduleFormatted } = require('./commandsHandler/getScheduleFormatted.js')
 const { RemoveLoggedUser } = require('./commandsHandler/removeLoggedUser.js')
 const { BanlistHandler, IsUserBanned } = require('./commandsHandler/banListHandler.js')
+const { IsUserOp } = require('./commandsHandler/opHandler.js')
 require('dotenv').config()
 
 /**@type Channel */
@@ -42,6 +43,7 @@ client.on('interactionCreate', async interaction => {
             case 'uploadschedule':
                 if (isBanned)
                 {
+                    logger.info(`User <@${userID}> cannot use command 'uploadschedule': banned`)
                     await interaction.reply("**You canot upload a schedule: you are banned**")
                     return
                 }
@@ -72,6 +74,7 @@ client.on('interactionCreate', async interaction => {
             case 'removeuser':
                 if (!isOp)
                 {
+                    logger.info(`User <@${userID}> cannot use command 'removeuser': not admin`)
                     await interaction.reply("**You cannot remove user from board: you are not an admin**")
                     return
                 }
@@ -82,6 +85,7 @@ client.on('interactionCreate', async interaction => {
             case 'banlist':
                 if (!isOp)
                 {
+                    logger.info(`User <@${userID}> cannot use command 'removeuser': not admin`)
                     await interaction.reply("**You cannot modify banlist: you are not an admin**")
                     return
                 }
