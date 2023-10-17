@@ -7,7 +7,7 @@ const { ReplyWithSchedule } = require('./commandsHandler/getScheduleHandler.js')
 const { ReplyWithLoggedUsers } = require('./commandsHandler/getLoggedUsers.js')
 const { GetScheduleFormatted } = require('./commandsHandler/getScheduleFormatted.js')
 const { RemoveLoggedUser } = require('./commandsHandler/removeLoggedUser.js')
-const { BanlistHandler } = require('./commandsHandler/banListHandler.js')
+const { BanlistHandler, IsUserBanned } = require('./commandsHandler/banListHandler.js')
 require('dotenv').config()
 
 /**@type Channel */
@@ -31,12 +31,21 @@ client.on('interactionCreate', async interaction => {
         let userID = interaction.user.id
         let options = interaction.options
 
+        let isOp = IsUserOp(userID)
+        let isBanned = IsUserBanned(userID)
+
         switch (interaction.commandName) {
             case 'setdisplayname':
                 logger.info(`User <@${userID}> entered command 'setdisplayname'`)
                 await UpdateUserDisplayName(interaction, userID, options.get('name'))
                 break
             case 'uploadschedule':
+                if (isBanned)
+                {
+                    await interaction.reply("**You canot upload a schedule: you are banned**")
+                    return
+                }
+
                 logger.info(`User <@${userID}> entered command 'uploadschedule'`)
                 await InitializeScheduleRequest(interaction)
                 break
@@ -61,10 +70,22 @@ client.on('interactionCreate', async interaction => {
                 await ReplyWithLoggedUsers(interaction)
                 break
             case 'removeuser':
+                if (!isOp)
+                {
+                    await interaction.reply("**You cannot remove user from board: you are not an admin**")
+                    return
+                }
+
                 logger.info(`User <@${userID}> entered command 'removeuser'`)
                 await RemoveLoggedUser(interaction, userID, options.get('user'))
                 break
             case 'banlist':
+                if (!isOp)
+                {
+                    await interaction.reply("**You cannot modify banlist: you are not an admin**")
+                    return
+                }
+
                 logger.info(`User <@${userID}> entered command 'removeuser'`)
                 await BanlistHandler(interaction, userID, options.getSubcommand(), options.get('user'))
                 break

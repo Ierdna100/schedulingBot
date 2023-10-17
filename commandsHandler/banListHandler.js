@@ -74,4 +74,19 @@ async function BanlistHandler(interaction, opID, subcommand, userID)
     }
 }
 
-module.exports = { BanlistHandler }
+function IsUserBanned(searchID)
+{
+    currentlyBannedUsers = JSON.parse(fs.readFileSync("./permissions/bannedUsers.json"))
+    
+    for (user of currentlyBannedUsers)
+    {
+        if (user == searchID)
+        {
+            return true
+        }
+    }
+
+    return false
+}
+
+module.exports = { BanlistHandler, IsUserBanned }
