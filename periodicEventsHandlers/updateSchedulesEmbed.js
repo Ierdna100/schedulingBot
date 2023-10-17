@@ -25,7 +25,9 @@ const CurrentlyDoing = {
     inBreak: 3,
     almostBreak: 4,
     finishedDay: 5,
-    almostEnd: 6
+    almostEnd: 6,
+    hasNotBegun: 7,
+    hasAlmostBegun: 8
 }
 
 /**@enum */
@@ -129,12 +131,23 @@ function GenerateNewSchedulesEmbed()
             continue
         }
 
+        // Compute studentStatus
         let maxCourseIndex = student.schedule[dayKey].length
         let courseIndex = 0
         for (course of student.schedule[dayKey])
         {
+            // If we are more than 15 minutes before first start time
+            if (courseIndex == 0 && absoluteTimeInHours <= (course.startTime - 0.25))
+            {
+                studentStatus = CurrentlyDoing.hasNotBegun
+            }
+            // If we are before first start time
+            else if (courseIndex == 0 && absoluteTimeInHours <= course.startTime)
+            {
+                studentStatus = CurrentlyDoing.hasAlmostBegun
+            }
             // If we are over the start time
-            if (absoluteTimeInHours > course.startTime)
+            else if (absoluteTimeInHours > course.startTime)
             {
                 // If above start time and below end time, then we are in class
                 // If not within 15 minutes of end, then show inClass
@@ -176,6 +189,7 @@ function GenerateNewSchedulesEmbed()
             }
         }
 
+        // Compute fields
         let fieldValue = ""
 
         let currentCourse
@@ -183,17 +197,17 @@ function GenerateNewSchedulesEmbed()
 
         nextCourse = student.schedule[dayKey][courseIndex + 1]
 
-       // if in break, then courseIndex indicates nextclass
-       if (studentStatus == CurrentlyDoing.inBreak || studentStatus == CurrentlyDoing.almostClass)
-       {
+        // if in break, then courseIndex indicates nextclass
+        if (studentStatus == CurrentlyDoing.inBreak || studentStatus == CurrentlyDoing.almostClass)
+        {
             nextCourse = student.schedule[dayKey][courseIndex]
-       }
-       // If not in break, then courseIndex indicates class, + 1 indicates nextClass
-       else
-       {
+        }
+        // If not in break, then courseIndex indicates class, + 1 indicates nextClass
+        else
+        {
             currentCourse = student.schedule[dayKey][courseIndex]
             nextCourse = student.schedule[dayKey][courseIndex + 1]
-       }
+        }
 
         switch (studentStatus)
         {
@@ -201,7 +215,7 @@ function GenerateNewSchedulesEmbed()
             case CurrentlyDoing.almostEnd:
             case CurrentlyDoing.inClass:
                 fieldValue += `**Currently in** __${currentCourse.className}__`
-                let rooms = currentCourse.rooms
+                rooms = currentCourse.rooms
                 if (rooms == undefined)
                 {
                     fieldValue += "\n"
@@ -237,13 +251,32 @@ function GenerateNewSchedulesEmbed()
             case CurrentlyDoing.inBreak:
                 fieldValue += `**Currently in break**\n`
                 fieldValue += `**Until:** \`[${DecimalHoursToHumanReadable(nextCourse.startTime)}]\`\n`
-                fieldValue += `**Next class:** __${nextCourse.className}__\n`
+                fieldValue += `**Next class:** __${nextCourse.className}__`
+                rooms = nextCourse.rooms
+                if (rooms == undefined)
+                {
+                    fieldValue += "\n"
+                }
+                else
+                {
+                    fieldValue += ` (${rooms[0]})\n`
+                }
+
                 fieldValue += `**Ends at:** \`[${DecimalHoursToHumanReadable(nextCourse.endTime)}]\`\n`
                 fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 break
             // Not technically used
             case CurrentlyDoing.finishedDay:
                 fieldValue += `**Day ended**`
+                break
+            case CurrentlyDoing.hasAlmostBegun:
+                fieldValue += `**Class starting soon**\n`
+            case CurrentlyDoing.hasNotBegun:
+                fieldValue += `**Has not began classes yet**\n`
+                fieldValue += `**Starts at:** \`[${DecimalHoursToHumanReadable(nextCourse.startTime)}]\`\n`
+                fieldValue += `**Starts with:** __${nextCourse.className}__\n`
+                fieldValue += `**Ends class at:** \`[${DecimalHoursToHumanReadable(nextCourse.endTime)}]\`\n`
+                fieldValue += `**Ends day at:** \`[${DecimalHoursToHumanReadable(student.finishesAt[dayKey])}]\``
                 break
             default:
                 logger.warn(`Invalid studentStatus for student ${student.displayName} (${schedule.userID})`)
