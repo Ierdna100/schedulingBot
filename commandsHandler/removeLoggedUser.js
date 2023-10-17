@@ -1,4 +1,6 @@
 const fs = require('fs')
+const createLogger = require('logging')
+const logger = createLogger.default('Scheduling Bot')
 
 async function RemoveLoggedUser(interaction, opID, userID)
 {

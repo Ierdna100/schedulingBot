@@ -71,7 +71,7 @@ client.on('interactionCreate', async interaction => {
                 logger.info(`User <@${userID}> entered command 'getusers'`)
                 await ReplyWithLoggedUsers(interaction)
                 break
-            case 'removeuser':
+            case 'removeschedule':
                 if (!isOp)
                 {
                     logger.info(`User <@${userID}> cannot use command 'removeuser': not admin`)
