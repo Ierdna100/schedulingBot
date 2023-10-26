@@ -1,0 +1,24 @@
+{
+  "name": "schedulingbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "run": "node ./build/app.js",
+    "build": "npx tsc",
+    "test": "nodemon ./build/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ierdna100/schedulingBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ierdna100/schedulingBot/issues"
+  },
+  "homepage": "https://github.com/Ierdna100/schedulingBot#readme",
+  "dependencies": {
+    "typescript": "^5.2.2"
+  }
+}
