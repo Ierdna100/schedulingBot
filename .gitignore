@@ -1,9 +1,0 @@
-/schedules/*
-/node_modules/
-/.env
-/logs/*
-/node_mdoules/*
-/manualParsing/input/*
-/manualParsing/output/*
-/logSchedules/*
-/outputlog.txt
