@@ -22,6 +22,10 @@ let messageReference = undefined;
 const logger = createLogger.default('Scheduling Bot')
 let client
 
+//Timeout values
+let createClientTimeout
+let updateSchedulesTimeout
+
 if (!process.env.TOKEN 
     || !process.env.CLIENT_ID 
     || !process.env.UPDATE_CHANNEL_ID)
@@ -145,12 +149,13 @@ function createClient() {
     client.on('error', error => {
         clientRunning = false
         client.destroy()
+        clearTimeout(updateSchedulesTimeout)
 
         logger.error(`Server crashed with error name: ${error.name}`)
         logger.error(`${error.message}`)
         logger.error("Attempting restart in 10 minutes!")
 
-        setTimeout(createClient, 10 * 60 * 1000)
+        createClientTimeout = setTimeout(createClient, 10 * 60 * 1000)
     })
 
     logger.info("Attempting to connect to Discord with websocket...")
@@ -190,7 +195,7 @@ async function UpdateSchedules() {
         }
     }
 
-    setTimeout(UpdateSchedules, process.env.UPDATE_RATE_SECONDS * 1000)
+    updateSchedulesTimeout = setTimeout(UpdateSchedules, process.env.UPDATE_RATE_SECONDS * 1000)
 }
 
 function ResetMessageIDInfo()
@@ -207,13 +212,26 @@ app.get('/', (req, res) => {
 app.get('/restart', (req, res) => {
     if (!clientRunning) {
         res.send("Client is not running! Attempting manual restart.")
+        clearTimeout(createClientTimeout)
         createClient()
         return
     }
 
     res.send("Client was already running, restarting.")
+    clearTimeout(updateSchedulesTimeout)
     client.destroy()
     createClient()
+})
+
+app.get('/crash', (req, res) => {
+    if (!clientRunning) {
+        res.send("Client is not running!")
+        return
+    }
+
+    res.send("Client was running, stopping.")
+    clearTimeout(updateSchedulesTimeout)
+    client.destroy()
 })
 
 app.listen(process.env.DEBUG_PORT, () => {
