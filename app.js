@@ -203,5 +203,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(process.env.DEBUG_PORT, () => {
-    console.log(`Debugging listening on port: ${process.env.DEBUG_PORT}`)
+    logger.info(`Debugging listening on port: ${process.env.DEBUG_PORT}`)
 })
