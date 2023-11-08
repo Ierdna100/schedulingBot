@@ -20,6 +20,7 @@ let clientRunning = false
 let updateChannel
 let messageReference = undefined;
 const logger = createLogger.default('Scheduling Bot')
+let client
 
 if (!process.env.TOKEN 
     || !process.env.CLIENT_ID 
@@ -32,12 +33,13 @@ if (!process.env.TOKEN
 createClient()
 
 function createClient() {
-    const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+    client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
     client.on('ready', () => {
         updateChannel = client.channels.cache.get(process.env.UPDATE_CHANNEL_ID)
+        logChannel = client.channels.cache.get("1137896994174681278")
     
-        //updateChannel.send(`<@337662083523018753> server started`)
+        logChannel.send(`<@337662083523018753> server started`)
     
         logger.info(`Websocket ready and connected as: ${client.user.tag}`)
         
@@ -200,6 +202,18 @@ function ResetMessageIDInfo()
 
 app.get('/', (req, res) => {
     res.send(`Server running: ${clientRunning}`)
+})
+
+app.get('/restart', (req, res) => {
+    if (!clientRunning) {
+        res.send("Client is not running! Attempting manual restart.")
+        createClient()
+        return
+    }
+
+    res.send("Client was already running, restarting.")
+    client.destroy()
+    createClient()
 })
 
 app.listen(process.env.DEBUG_PORT, () => {
