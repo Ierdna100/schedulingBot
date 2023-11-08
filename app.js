@@ -9,7 +9,10 @@ const { GetScheduleFormatted } = require('./commandsHandler/getScheduleFormatted
 const { RemoveLoggedUser } = require('./commandsHandler/removeLoggedUser.js')
 const { BanlistHandler, IsUserBanned } = require('./commandsHandler/banListHandler.js')
 const { IsUserOp } = require('./commandsHandler/opHandler.js')
+const express = require('express')
+
 require('dotenv').config()
+const app = express()
 
 /**@type Channel */
 let updateChannel
@@ -173,5 +176,13 @@ function ResetMessageIDInfo()
     AddVariableToEnvFile("UPDATE_MESSAGE_ID", "")
     messageReference = undefined
 }
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
 
 client.login(process.env.TOKEN)
