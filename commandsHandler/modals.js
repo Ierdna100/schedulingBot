@@ -1,6 +1,6 @@
 const { ModalBuilder, ActionRowBuilder, TextInputBuilder } = require("@discordjs/builders")
 
-const fields = {
+const scheduleFields = {
     username: new TextInputBuilder()
         .setCustomId("username")
         .setMaxLength(20)
@@ -20,8 +20,32 @@ const scheduleModal = new ModalBuilder()
     .setCustomId("schedule_modal")
     .setTitle("Input your schedule")
     .setComponents(
-        new ActionRowBuilder().setComponents(fields.username),
-        new ActionRowBuilder().setComponents(fields.schedule),
+        new ActionRowBuilder().setComponents(scheduleFields.username),
+        new ActionRowBuilder().setComponents(scheduleFields.schedule),
     )
 
-module.exports = { scheduleModal }
+const dayoffFields = {
+    day: new TextInputBuilder()
+        .setCustomId("day")
+        .setPlaceholder("Epoch time (GMT-05:00 assumed)")
+        .setRequired(true)
+        .setLabel("Day in which day off takes place.")
+        .setStyle("Short"),
+    reason: new TextInputBuilder()
+        .setCustomId("reason")
+        .setMaxLength(64)
+        .setPlaceholder("Reason of day off")
+        .setRequired(true)
+        .setLabel("Reason of day off")
+        .setStyle("Short"),
+}
+
+const dayoffModal = new ModalBuilder()
+    .setCustomId("dayoff_modal")
+    .setTitle("Input your schedule")
+    .setComponents(
+        new ActionRowBuilder().setComponents(dayoffFields.day),
+        new ActionRowBuilder().setComponents(dayoffFields.reason),
+    )
+
+module.exports = { scheduleModal, dayoffModal }

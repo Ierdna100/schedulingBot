@@ -2,7 +2,7 @@ const fs = require('fs')
 
 async function BanlistHandler(interaction, opID, subcommand, userID)
 {
-    currentlyBannedUsers = JSON.parse(fs.readFileSync("./permissions/bannedUsers.json"))
+    currentlyBannedUsers = JSON.parse(fs.readFileSync("./botData/bannedUsers.json"))
     searchID = userID?.value
 
     if (subcommand == 'add')
@@ -19,7 +19,7 @@ async function BanlistHandler(interaction, opID, subcommand, userID)
         currentlyBannedUsers.push(searchID)
         console.log(currentlyBannedUsers)
 
-        fs.writeFileSync("./permissions/bannedUsers.json", JSON.stringify(currentlyBannedUsers, null, "\t"))
+        fs.writeFileSync("./botData/bannedUsers.json", JSON.stringify(currentlyBannedUsers, null, "\t"))
 
         interaction.reply({content: `**Banned user <@${searchID}>**`, allowedMentions: { users: [], roles: [] }})
         return
@@ -40,7 +40,7 @@ async function BanlistHandler(interaction, opID, subcommand, userID)
                     }
                 }
 
-                fs.writeFileSync("./permissions/bannedUsers.json", JSON.stringify(newBanlist, null, "\t"))
+                fs.writeFileSync("./botData/bannedUsers.json", JSON.stringify(newBanlist, null, "\t"))
 
                 interaction.reply({content: `**Unbanned user <@${searchID}>**`, allowedMentions: { users: [], roles: [] }})
                 return
@@ -76,7 +76,7 @@ async function BanlistHandler(interaction, opID, subcommand, userID)
 
 function IsUserBanned(searchID)
 {
-    currentlyBannedUsers = JSON.parse(fs.readFileSync("./permissions/bannedUsers.json"))
+    currentlyBannedUsers = JSON.parse(fs.readFileSync("./botData/bannedUsers.json"))
     
     for (user of currentlyBannedUsers)
     {

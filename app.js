@@ -9,10 +9,10 @@ const { GetScheduleFormatted } = require('./commandsHandler/getScheduleFormatted
 const { RemoveLoggedUser } = require('./commandsHandler/removeLoggedUser.js')
 const { BanlistHandler, IsUserBanned } = require('./commandsHandler/banListHandler.js')
 const { IsUserOp } = require('./commandsHandler/opHandler.js')
-const express = require('express')
+const { InitializeDayoffModal, SetDayoff, UploadDayoff } = require('./commandsHandler/dayoffHandler.js')
 
 require('dotenv').config()
-const app = express()
+
 /**@type boolean */
 let clientRunning = false
 
@@ -128,6 +128,17 @@ function createClient() {
                     logger.info(`User <@${userID}> entered command 'removeuser'`)
                     await BanlistHandler(interaction, userID, options.getSubcommand(), options.get('user'))
                     break
+                case 'dayoff':
+                    if (!isOp)
+                    {
+                        logger.info(`User <@${userID}> cannot use command 'dayoff': not admin`)
+                        await interaction.reply("**You cannot modify days off: you are not an admin**")
+                        return
+                    }
+    
+                    logger.info(`User <@${userID}> entered command 'dayoff'`)
+                    await InitializeDayoffModal(interaction)
+                    break
                 default:
                     logger.warn(`Command ${interaction.commandName} is not handled!`)
                     await interaction.reply({ content: "`501 - Not Implemented`" })
@@ -138,10 +149,38 @@ function createClient() {
             let userID = interaction.user.id
             let components = interaction.components
     
+            console.log(interaction.customId)
+
             if (interaction.customId == "schedule_modal")
             {
                 logger.info(`User <@${userID}> submitted modal 'schedule_modal'`)
                 UploadUserSchedule(interaction, userID, components)
+            }
+            else if (interaction.customId == "dayoff_modal")
+            {
+                logger.info(`User <@${userID}> submitted modal 'dayoff_modal'`)
+                UploadDayoff(interaction, userID, components)
+            }
+        }
+        else if (interaction.isStringSelectMenu())
+        {
+            let userID = interaction.user.id
+
+            let isOp = IsUserOp(userID)
+            let isBanned = IsUserBanned(userID)
+
+            if (isBanned)
+            {
+                logger.info(`User <@${userID}> cannot submit select menus: banned`)
+                await interaction.reply("**You canot interact with the bot: you are banned**")
+                return
+            }
+
+            if (interaction.customId == "dayoff_cegep_selector")
+            {
+                logger.info(`User <@${userID}> submitted select menu 'dayoff_cegep_selector'`)
+                await SetDayoff(interaction)
+                return
             }
         }
     })
@@ -204,36 +243,3 @@ function ResetMessageIDInfo()
     AddVariableToEnvFile("UPDATE_MESSAGE_ID", "")
     messageReference = undefined
 }
-
-app.get('/', (req, res) => {
-    res.send(`Server running: ${clientRunning}`)
-})
-
-app.get('/restart', (req, res) => {
-    if (!clientRunning) {
-        res.send("Client is not running! Attempting manual restart.")
-        clearTimeout(createClientTimeout)
-        createClient()
-        return
-    }
-
-    res.send("Client was already running, restarting.")
-    clearTimeout(updateSchedulesTimeout)
-    client.destroy()
-    createClient()
-})
-
-app.get('/crash', (req, res) => {
-    if (!clientRunning) {
-        res.send("Client is not running!")
-        return
-    }
-
-    res.send("Client was running, stopping.")
-    clearTimeout(updateSchedulesTimeout)
-    client.destroy()
-})
-
-app.listen(process.env.DEBUG_PORT, () => {
-    logger.info(`Debugging listening on port: ${process.env.DEBUG_PORT}`)
-})

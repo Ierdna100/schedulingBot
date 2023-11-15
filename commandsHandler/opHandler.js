@@ -2,7 +2,7 @@ const fs = require("fs")
 
 function IsUserOp(searchID)
 {
-    currentlyOppedUsers = JSON.parse(fs.readFileSync("./permissions/opUsers.json"))
+    currentlyOppedUsers = JSON.parse(fs.readFileSync("./botData/opUsers.json"))
 
     for (user of currentlyOppedUsers)
     {
