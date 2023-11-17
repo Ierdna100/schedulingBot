@@ -1,10 +1,10 @@
-/schedules/*
+/schedules/
 /node_modules/
 /.env
 /logs/*
 /node_mdoules/*
 /manualParsing/input/*
 /manualParsing/output/*
-/logSchedules/*
+/logSchedules/
 /outputlog.txt
-/botData/*
+/botData/
