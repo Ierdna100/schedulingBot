@@ -9,9 +9,9 @@ FIRST_WEEK_NUM=
 ANNOUNCEMENTS_CHANNEL=
 LOG_CHANNEL=`
 
-fs.mkdir("./botData/", () => {})
-fs.mkdir("./logSchedules/", () => {})
-fs.mkdir("./schedules/", () => {})
+fs.mkdirSync("./botData/", () => {})
+fs.mkdirSync("./logSchedules/", () => {})
+fs.mkdirSync("./schedules/", () => {})
 
 fs.writeFileSync("./botData/bannedUsers.json", "[]")
 fs.writeFileSync("./botData/daysoff.json", "[]")
