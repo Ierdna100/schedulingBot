@@ -135,7 +135,7 @@ function GenerateNewSchedulesEmbed()
     dayString = dayString.substr(0, 2) + dayString.charAt(2).toUpperCase() + dayString.substr(3)
     currentDateStr += dayString 
 
-    let daysOff = JSON.parse(fs.readFileSync("./botdata/daysoff.json"))
+    let daysOff = JSON.parse(fs.readFileSync("./botData/daysoff.json"))
 
     let schoolsOff = []
 
