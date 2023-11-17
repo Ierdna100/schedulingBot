@@ -19,4 +19,6 @@ fs.writeFileSync("./botData/opUsers.json", "[]")
 
 fs.writeFileSync("./.env", envFileFormat)
 
+fs.writeFileSync("./outputlog.txt", "")
+
 console.log("Initialized directories! Please fill the .env file!\n\n")
