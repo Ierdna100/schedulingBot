@@ -1,11 +1,17 @@
 const createLogger = require('logging')
 const fs = require('fs')
+const { schools } = require('../commandsHandler/schools')
+const { AnnounceDayOff } = require('../app')
 require('dotenv').config()
 
 const logger = createLogger.default('Scheduling Bot')
 
 let schedules = []
 let existingNames = []
+
+let announcementsChannel
+
+let prevDayoffData
 
 /**@enum */
 const Weekdays = {
@@ -44,6 +50,10 @@ const MonthsOfTheYear = {
     9: "October",
     10: "November",
     11: "December"
+}
+
+function SetAnnouncementChannel(d) {
+    announcementsChannel = d
 }
 
 function UpdateSchedulesInMemory()
@@ -99,26 +109,103 @@ function GenerateNewSchedulesEmbed()
 
     let fields = []
 
+    let currentDateStr = ""
+    currentDateStr += `${currentDate.getDate()}`
+    
+    switch(currentDate.getDate() % 10)
+    {
+        case 1:
+            currentDateStr += "st"
+            break
+        case 2:
+            currentDateStr += "nd"
+            break
+        case 3:
+            currentDateStr += "rd"
+            break
+        default:
+            currentDateStr += "th"
+    }
+
+    currentDateStr += ` of ${MonthsOfTheYear[currentDate.getMonth()]}, ${currentDate.getFullYear()}`
+
+    currentDateStr += " - Week "
+    currentDateStr += Math.ceil((Math.ceil(currentDate.getTime() / 1000 / 60 / 60 / 24) - Math.floor((currentDate.getFullYear() - 1970) * 365.25)) / 7) - parseInt(process.env.FIRST_WEEK_NUM)
+    let dayString = ", " + Weekdays[currentDate.getDay()]
+    dayString = dayString.substr(0, 2) + dayString.charAt(2).toUpperCase() + dayString.substr(3)
+    currentDateStr += dayString 
+
+    let daysOff = JSON.parse(fs.readFileSync("./botdata/daysoff.json"))
+
+    let schoolsOff = []
+
+    for (const dayoff of daysOff) {
+        if (dayoff.school == schools.all) {
+            if (dayoff.month == currentDate.getMonth() && dayoff.day == currentDate.getDate()) {
+                let dayoffData = `${dayoff.month}_${dayoff.day}`
+
+                if (prevDayoffData != dayoffData) {
+                    announcementsChannel.send(`@everyone General day off today! *Reason: ${dayoff.reason}*`)
+                }
+
+                prevDayoffData = dayoffData
+
+                return { embeds: [
+                    {
+                        title: "Day off for everyone today!",
+                        description: `***Reason: ${dayoff.reason}***`,
+                        footer: {
+                            text: "Want your name and schedule to appear here? Type \"/help\" and follow the instructions!"
+                        },
+                        timestamp: currentDate.toISOString(),
+                        color: parseInt("0x0091ff")
+                    }
+                ]}
+            }
+        }
+        else {
+            schoolsOff.push(dayoff.school)
+            fields.push({
+                name: `***${dayoff.school} has a day off today! No classes!***`,
+                value: `*Reason: ${dayoff.reason}*`,
+                inline: false
+            })
+        }
+    }
+
+    
+    // If sunday or saturday
+    if (day == 0 || day == 6)
+    {
+        return { embeds: [
+            {
+                title: "No school today",
+                footer: {
+                    text: "Want your name and schedule to appear here? Type \"/help\" and follow the instructions!"
+                },
+                timestamp: currentDate.toISOString(),
+                color: parseInt("0x0091ff")
+            }
+        ]}
+    }
+
     for (let schedule of schedules)
     {
         student = schedule.data
+        skipStudent = false
+
+        for (const schoolOff of schoolsOff) {
+            if (schoolOff == student.school) {
+                skipStudent = true
+                break
+            }
+        }
+
+        if (skipStudent) {
+            continue
+        }
 
         let studentStatus
-
-        // If sunday or saturday
-        if (day == 0 || day == 6)
-        {
-            return { embeds: [
-                {
-                    title: "No school today",
-                    footer: {
-                        text: "Want your name and schedule to appear here? Type \"/help\" and follow the instructions!"
-                    },
-                    timestamp: currentDate.toISOString(),
-                    color: parseInt("0x0091ff")
-                }
-            ]}
-        }
 
         // If student has no classes today || If student has finished
         if (student.finishesAt[dayKey] == null || absoluteTimeInHours > student.finishesAt[dayKey])
@@ -293,26 +380,6 @@ function GenerateNewSchedulesEmbed()
         })
     }
 
-    let currentDateStr = ""
-    currentDateStr += `${currentDate.getDate()}`
-    
-    switch(currentDate.getDate() % 10)
-    {
-        case 1:
-            currentDateStr += "st"
-            break
-        case 2:
-            currentDateStr += "nd"
-            break
-        case 3:
-            currentDateStr += "rd"
-            break
-        default:
-            currentDateStr += "th"
-    }
-
-    currentDateStr += ` of ${MonthsOfTheYear[currentDate.getMonth()]}, ${currentDate.getFullYear()}`
-
     return { embeds: [
         {
             title: "Schedules for today",
@@ -332,4 +399,4 @@ function DecimalHoursToHumanReadable(hours)
     return `${Math.floor(hours)}`.padStart(2, "0") + ":" + `${Math.floor((hours % 1) * 60)}`.padStart(2, "0")
 }
 
-module.exports = { GenerateNewSchedulesEmbed, UpdateSchedulesInMemory, GetExistingName }
+module.exports = { GenerateNewSchedulesEmbed, UpdateSchedulesInMemory, GetExistingName, MonthsOfTheYear, SetAnnouncementChannel }

@@ -3,6 +3,7 @@ const fs = require('fs')
 const createLogger = require('logging')
 const { schools } = require("./schools")
 const { dayoffModal } = require("./modals")
+const { MonthsOfTheYear } = require("../periodicEventsHandlers/updateSchedulesEmbed")
 
 const logger = createLogger.default('Scheduling Bot')
 
@@ -37,13 +38,6 @@ async function SetDayoff(interaction)
 {
     values = interaction.values
 
-    /**@type Date */
-    d = new Date().setSeconds(18000)
-
-    console.log(d.getMonth())
-    console.log(d.getDay())
-    console.log(d.getFullYear())
-
     newCurrentDayoff.school = values[0]
 
     logger.info("Responded with modal")
@@ -52,14 +46,49 @@ async function SetDayoff(interaction)
 
 async function UploadDayoff(interaction, userID, components)
 {
-    /**@type Date */
-    d = new Date().setSeconds(18000)
+    let rawDay
+    let rawReason
+    let pingOnDay = false
 
-    console.log(d.getMonth())
-    console.log(d.getDay())
-    console.log(d.getFullYear())
+    for (c of components) {
+        if (c.components[0].customId == "day") {
+            rawDay = c.components[0].value
+        } else if (c.components[0].customId == "reason") {
+            rawReason = c.components[0].value
+        } else if (c.components[0].customId == "ping_on_day") {
+            if (c.components[0].value.toLowerCase() == "y") {
+                pingOnDay = true
+            }
+        }
+    }
 
-    await interaction.reply("a")
+    rawDay = rawDay.trim()
+    
+    if (rawDay.length != 5) {
+        await interaction.reply("Invalid date format!")
+        return
+    }
+
+    let rawDayMonth = rawDay.substring(0, 3)
+    let rawDayDay = rawDay.substring(3)
+
+    for (key in MonthsOfTheYear) {
+        if (MonthsOfTheYear[key].substr(0, 3).toLowerCase() == rawDayMonth.toLowerCase())
+        {
+            newCurrentDayoff.month = key
+            break
+        }
+    }
+
+    newCurrentDayoff.day = rawDayDay
+
+    newCurrentDayoff.reason = rawReason
+    newCurrentDayoff.pingOnDay = pingOnDay
+
+    currentDaysOff.push(newCurrentDayoff)
+    fs.writeFileSync('./botData/daysoff.json', JSON.stringify(currentDaysOff, null, "\t"))
+
+    await interaction.reply(`Added new day off with data:\n\`\`\`json\n${JSON.stringify(newCurrentDayoff, null, "  ")}\n\`\`\``)
 }
 
 module.exports = { InitializeDayoffModal, SetDayoff, UploadDayoff }

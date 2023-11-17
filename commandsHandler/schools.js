@@ -1,9 +1,9 @@
 /**@enum */
 const schools = {
-    bdeb: "bdeb",
-    vanier: "vanier",
-    other: "other",
-    all: "all"
+    bdeb: "Bois-de-Boulogne",
+    vanier: "Vanier",
+    other: "Other",
+    all: "All"
 }
 
 module.exports = { schools }

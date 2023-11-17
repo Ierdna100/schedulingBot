@@ -7,8 +7,7 @@
     "run": "node app.js",
     "dev": "nodemon app.js",
     "register": "node registerCommands.js",
-    "install": "node initializeBot.js",
-    "manual": "node ./manualParsing/manualParser.js"
+    "install": "node initializeBot.js"
   },
   "repository": {
     "type": "git",

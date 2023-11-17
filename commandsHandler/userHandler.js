@@ -70,6 +70,13 @@ async function InitializeScheduleRequest(interaction)
     await interaction.showModal(scheduleModal)
 }
 
+/**@enum */
+const School = {
+    1: "bdeb",
+    2: "vanier",
+    3: "other"
+}
+
 /**
  * @param {import("discord.js").Interaction} interaction 
  */
@@ -93,6 +100,23 @@ async function UploadUserSchedule(interaction, userID, components)
 
     let username = components[0].components[0].value
     let schedule = components[1].components[0].value
+
+    let schoolID
+
+    try {
+        schoolID = parseInt(components[2].components[0].value)
+    }
+    catch {
+        await interaction.reply("**School ID was invalid!**")
+        return
+    }
+
+    if (schoolID > 3) {
+        await interaction.reply("**School ID was invalid!**")
+        return
+    }
+    
+    let school = School[schoolID]
 
     // log schedules in case people want to fuck over the bot
     /**@type Date */
@@ -171,6 +195,7 @@ async function UploadUserSchedule(interaction, userID, components)
 
     let scheduleAsJSON = {
         displayName: username,
+        school: school,
         finishesAt: finishesAt,
         schedule: classDays,
     }

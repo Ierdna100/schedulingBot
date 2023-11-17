@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js')
-const { GenerateNewSchedulesEmbed } = require('./periodicEventsHandlers/updateSchedulesEmbed.js')
+const { GenerateNewSchedulesEmbed, SetAnnouncementChannel } = require('./periodicEventsHandlers/updateSchedulesEmbed.js')
 const createLogger = require('logging')
 const { AddVariableToEnvFile } = require('./envManager.js')
 const { UpdateUserDisplayName, InitializeScheduleRequest, ClearUserSchedule, UploadUserSchedule } = require('./commandsHandler/userHandler.js')
@@ -25,6 +25,7 @@ let client
 //Timeout values
 let createClientTimeout
 let updateSchedulesTimeout
+let announcementsChannel
 
 if (!process.env.TOKEN 
     || !process.env.CLIENT_ID 
@@ -41,7 +42,11 @@ function createClient() {
 
     client.on('ready', () => {
         updateChannel = client.channels.cache.get(process.env.UPDATE_CHANNEL_ID)
-        logChannel = client.channels.cache.get("1137896994174681278")
+        announcementsChannel = client.channels.cache.get(process.env.ANNOUNCEMENTS_CHANNEL)
+
+        SetAnnouncementChannel(announcementsChannel)
+
+        logChannel = client.channels.cache.get(process.env.LOG_CHANNEL)
     
         logChannel.send(`<@337662083523018753> server started`)
     

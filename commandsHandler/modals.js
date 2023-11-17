@@ -13,7 +13,14 @@ const scheduleFields = {
         .setPlaceholder("Your schedule here")
         .setRequired(true)
         .setLabel("Your schedule")
-        .setStyle("Paragraph")
+        .setStyle("Paragraph"),
+    school: new TextInputBuilder()
+        .setCustomId("school")
+        .setMaxLength(1)
+        .setPlaceholder("School ID")
+        .setRequired(true)
+        .setLabel("1 = BdeB, 2 = Vanier, 3 = Other")
+        .setStyle("Short"),
 }
 
 const scheduleModal = new ModalBuilder()
@@ -21,15 +28,16 @@ const scheduleModal = new ModalBuilder()
     .setTitle("Input your schedule")
     .setComponents(
         new ActionRowBuilder().setComponents(scheduleFields.username),
+        new ActionRowBuilder().setComponents(scheduleFields.school),
         new ActionRowBuilder().setComponents(scheduleFields.schedule),
     )
 
 const dayoffFields = {
     day: new TextInputBuilder()
         .setCustomId("day")
-        .setPlaceholder("Epoch time (GMT-05:00 assumed)")
+        .setPlaceholder("nov12")
         .setRequired(true)
-        .setLabel("Day in which day off takes place.")
+        .setLabel("Day in which day off takes place. (mmmDD)")
         .setStyle("Short"),
     reason: new TextInputBuilder()
         .setCustomId("reason")
@@ -37,6 +45,13 @@ const dayoffFields = {
         .setPlaceholder("Reason of day off")
         .setRequired(true)
         .setLabel("Reason of day off")
+        .setStyle("Short"),
+    pingOnDay: new TextInputBuilder()
+        .setCustomId("ping_on_day")
+        .setMaxLength(1)
+        .setPlaceholder("Y")
+        .setRequired(true)
+        .setLabel("Ping on day?")
         .setStyle("Short"),
 }
 
@@ -46,6 +61,7 @@ const dayoffModal = new ModalBuilder()
     .setComponents(
         new ActionRowBuilder().setComponents(dayoffFields.day),
         new ActionRowBuilder().setComponents(dayoffFields.reason),
+        new ActionRowBuilder().setComponents(dayoffFields.pingOnDay)
     )
 
 module.exports = { scheduleModal, dayoffModal }
