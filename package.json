@@ -2,7 +2,8 @@
   "name": "schedulingbot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "type": "module",
+  "main": "app.js",
   "scripts": {
     "run": "node ./build/app.js",
     "build": "npx tsc",

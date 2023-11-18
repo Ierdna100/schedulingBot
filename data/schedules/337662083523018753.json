@@ -1,0 +1,126 @@
+{
+	"displayName": "Andrei",
+	"school": "Vanier",
+	"finishesAt": {
+		"monday": 17.5,
+		"tuesday": 16,
+		"wednesday": 18,
+		"thursday": 14,
+		"friday": null
+	},
+	"schedule": {
+		"monday": [
+			{
+				"className": "Introduction to College English",
+				"startTime": 8,
+				"endTime": 10,
+				"rooms": [
+					"E-509"
+				]
+			},
+			{
+				"className": "Calculus I",
+				"startTime": 10,
+				"endTime": 11.5,
+				"rooms": [
+					"B-503"
+				]
+			},
+			{
+				"className": "Mechanics",
+				"startTime": 11.5,
+				"endTime": 13,
+				"rooms": [
+					"A-302"
+				]
+			},
+			{
+				"className": "Oeuvres narratives et écriture",
+				"startTime": 14.5,
+				"endTime": 17.5,
+				"rooms": [
+					"D-508"
+				]
+			}
+		],
+		"tuesday": [
+			{
+				"className": "Calculus I",
+				"startTime": 14,
+				"endTime": 16,
+				"rooms": [
+					"N-521"
+				]
+			},
+			{
+				"className": "Introduction to Programming",
+				"startTime": 8.5,
+				"endTime": 11.5,
+				"rooms": [
+					"D-242"
+				]
+			},
+			{
+				"className": "Knowing Through Fiction",
+				"startTime": 12,
+				"endTime": 14,
+				"rooms": [
+					"N-336"
+				]
+			}
+		],
+		"wednesday": [
+			{
+				"className": "Calculus I",
+				"startTime": 11,
+				"endTime": 12.5,
+				"rooms": [
+					"B-503"
+				]
+			},
+			{
+				"className": "Mechanics",
+				"startTime": 16,
+				"endTime": 18,
+				"rooms": [
+					"B-426"
+				]
+			},
+			{
+				"className": "Introduction to Programming",
+				"startTime": 8.5,
+				"endTime": 10.5,
+				"rooms": [
+					"D-210"
+				]
+			}
+		],
+		"thursday": [
+			{
+				"className": "Introduction to College English",
+				"startTime": 8,
+				"endTime": 10,
+				"rooms": [
+					"A-342"
+				]
+			},
+			{
+				"className": "Mechanics",
+				"startTime": 10,
+				"endTime": 11.5,
+				"rooms": [
+					"A-302"
+				]
+			},
+			{
+				"className": "Knowing Through Fiction",
+				"startTime": 12,
+				"endTime": 14,
+				"rooms": [
+					"N-336"
+				]
+			}
+		],
+		"friday": []
+	}
+}

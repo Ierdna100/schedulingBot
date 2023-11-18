@@ -1,10 +1,16 @@
 import * as configDotenv from "dotenv";
-import { createClient } from "./client/client";
+import { DiscordClient } from "./client/client.js";
 
-// Dotenv
-configDotenv.config()
+class Application {
+    constructor() {
+        // Dotenv
+        configDotenv.config();
 
-// Discord client
-createClient()
+        // Discord client
+        new DiscordClient();
 
-// HTTP server control
+        // HTTP server control
+    }
+}
+
+new Application();
