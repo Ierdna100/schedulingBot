@@ -1,4 +1,4 @@
-import BaseCommand from './baseCommand.js';
+import {BaseCommand} from './baseCommand.js';
 import fs from 'fs';
 
 class CommandLoader {
@@ -10,8 +10,8 @@ class CommandLoader {
         const commandFileNames = fs.readdirSync('./build/commands/commands/');
 
         for (const commandFileName of commandFileNames) {
-            let command = await import(`./commands/${commandFileName}`);
-            CommandLoader.commands.push(new command.default)
+            let command: { default: new () => BaseCommand } = await import(`./commands/${commandFileName}`);
+            CommandLoader.commands.push(new command.default())
         }
     }
 }

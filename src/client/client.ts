@@ -3,6 +3,7 @@ import { onClientReady } from "./onReady.js";
 import { onInteractionCreate } from "./onInteractionCreate.js";
 import { onError } from "./onError.js";
 import { CommandLoader } from "../commands/commands.js";
+import { ModalLoader } from "../commands/modals.js";
 
 class DiscordClient {
     public client: Client;
@@ -10,6 +11,7 @@ class DiscordClient {
 
     constructor() {
         new CommandLoader().loadCommands();
+        new ModalLoader().loadModals();
     
         this.client = new Client({ intents: [GatewayIntentBits.Guilds] })
     

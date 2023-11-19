@@ -8,7 +8,8 @@
     "run": "node ./build/app.js",
     "build": "npx tsc",
     "test": "nodemon ./build/app.js",
-    "btest": "npx tsc & node ./build/app.js"
+    "btest": "npx tsc & node ./build/app.js",
+    "ctest": "npx tsc & node ./build/utilities/registerCommands.js"
   },
   "repository": {
     "type": "git",

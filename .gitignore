@@ -2,4 +2,5 @@
 /build/
 .env
 /data
+/logs
 TODO.md
