@@ -1,5 +1,7 @@
 import { Application } from "../Application.js";
 import { DaysOfTheWeek, MonthsOfTheYear, Ordinals } from "../dto/Days.js";
+import { DaysInMonth } from "../dto/DaysInMonth.js";
+import { TimeFormattingError } from "../dto/TimeFormatterErrors.js";
 
 export class TimeFormatter {
     public static decimalHoursToHumanReadable(time: number): string {
@@ -27,7 +29,7 @@ export class TimeFormatter {
 
     public static dateToScheduleDatestamp(date: Date): string {
         const schoolWeek = TimeFormatter.getWeekOfYear(date) - Application.instance.env.firstWeek;
-        return `${DaysOfTheWeek[date.getDay()]} ${TimeFormatter.formatOrdinal(date.getDay())} of ${MonthsOfTheYear[date.getMonth()]} - Week ${schoolWeek}`;
+        return `${DaysOfTheWeek[date.getDay()]} ${TimeFormatter.formatOrdinal(date.getDate())} of ${MonthsOfTheYear[date.getMonth()]} - Week ${schoolWeek}`;
     }
 
     private static formatOrdinal(day: number) {
@@ -40,5 +42,26 @@ export class TimeFormatter {
         }
 
         return `${day}${Ordinals[ordinalIndex]}`;
+    }
+
+    public static stringToDate(date: string, identifier = ""): TimeFormattingError {
+        // String: 0000/00/00
+        // CharAt: 0123456789
+        if (!(date.charAt(4) == "/" && date.charAt(7) == "/")) {
+            return { isError: true, message: `**Day ${identifier} declaration was invalid! Please use the \`YYYY/MM/DD\` format!` };
+        }
+
+        const year = parseInt(date.substring(0, 4));
+        const month = parseInt(date.substring(5, 7)) - 1;
+        const day = parseInt(date.substring(8));
+
+        if (Number.isNaN(year)) return { isError: true, message: `**Year ${identifier} was NaN!**` };
+        if (Number.isNaN(month)) return { isError: true, message: `**Month ${identifier} was NaN!**` };
+        if (Number.isNaN(day)) return { isError: true, message: `**Day ${identifier} was NaN!**` };
+
+        if (month < 0 || month > 11) return { isError: true, message: `**Month ${identifier} was out of bounds!**` };
+        if (day < 1 || day > DaysInMonth[month]) return { isError: true, message: `**Day ${identifier} was out of bounds!**` };
+
+        return { isError: false, date: new Date(year, month, day, 0, 0, 0, 0) };
     }
 }

@@ -1,42 +1,43 @@
 import { ActionRowBuilder, TextInputBuilder } from "@discordjs/builders";
-import { CacheType, ModalBuilder, ModalSubmitFields, ModalSubmitInteraction, TextInputStyle } from "discord.js";
-import BaseModal from "../BaseModal.js";
+import { CacheType, ComponentType, ModalBuilder, ModalSubmitFields, ModalSubmitInteraction, TextInputStyle } from "discord.js";
 import { Schools, SchoolsIdToName } from "../../../dto/Schools.js";
 import { InteractionReply } from "../../../dto/InteractionArguments.js";
 import { Application } from "../../../Application.js";
 import { ScheduleParser } from "../../../parsing/ScheduleParser.js";
 import { Logger } from "../../../logging/Logger.js";
 import { ISchedule } from "../../../dto/Schedule.js";
+import Modal_Base from "../Modal.js";
 
-class Modal_ScheduleUpload extends BaseModal {
+class Modal_ScheduleUpload extends Modal_Base {
     // prettier-ignore
     public modalBuilder = new ModalBuilder()
         .setCustomId("schedule_modal")
-        .setTitle("Input your schedule")
-        .setComponents(
+        .setTitle("Input your schedule here!")
+        .addComponents(
             new ActionRowBuilder<TextInputBuilder>()
                 .addComponents(new TextInputBuilder()
                     .setCustomId("username")
                     .setMaxLength(20)
-                    .setPlaceholder("Display name")
+                    .setMinLength(3)
+                    .setLabel("Display name")
                     .setRequired(true)
-                    .setLabel("Your display name")
-                    .setStyle(TextInputStyle.Short)),
+                    .setPlaceholder("Your display name")
+                    .setStyle(TextInputStyle.Short)).toJSON(),
             new ActionRowBuilder<TextInputBuilder>()
                 .addComponents(new TextInputBuilder()
                     .setCustomId("schedule")
                     .setPlaceholder("Your schedule here")
                     .setRequired(true)
                     .setLabel("Your schedule")
-                    .setStyle(TextInputStyle.Paragraph)),
+                    .setStyle(TextInputStyle.Paragraph)).toJSON(),
             new ActionRowBuilder<TextInputBuilder>()
                 .addComponents(new TextInputBuilder()
                     .setCustomId("school")
                     .setMaxLength(1)
-                    .setPlaceholder("School ID")
+                    .setLabel("School ID")
                     .setRequired(true)
-                    .setLabel("1 = Vanier, 2 = Bdeb, 3 = Other")
-                    .setStyle(TextInputStyle.Short)));
+                    .setPlaceholder("1 = Vanier, 2 = BdeB, 3 = Other")
+                    .setStyle(TextInputStyle.Short)).toJSON());
 
     async reply(interaction: ModalSubmitInteraction<CacheType>, executorId: string, fields: ModalSubmitFields): Promise<InteractionReply> {
         const rawUsername = fields.getTextInputValue("username");
@@ -45,7 +46,7 @@ class Modal_ScheduleUpload extends BaseModal {
 
         const schoolId = parseInt(rawSchoolId);
 
-        if (Number.isNaN(schoolId) || schoolId < 0 || schoolId > 3) {
+        if (Number.isNaN(schoolId) || schoolId < 1 || schoolId > 3) {
             return "**School ID was invalid!**";
         }
 
@@ -63,8 +64,8 @@ class Modal_ScheduleUpload extends BaseModal {
                 continue;
             }
 
+            // If username includes any other person's name without spaces
             if (rawUsername.toLowerCase().includes(schedule.displayName.toLowerCase().replaceAll(" ", ""))) {
-                // If username includes any other person's name without spaces, then do not allow
                 return "**Username cannot match already existing name!**";
             }
         }

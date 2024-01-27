@@ -1,7 +1,7 @@
 import { REST, Routes } from "discord.js";
 import * as configDotenv from "dotenv";
 import fs from "fs";
-import { BaseCommand } from "./discordServer/commands/BaseCommand.js";
+import { Command } from "./discordServer/commands/Command.js";
 
 async function refreshCommands() {
     configDotenv.config();
@@ -9,7 +9,7 @@ async function refreshCommands() {
     let commands = [];
 
     for (const file of fs.readdirSync("./build/discordServer/commands/commands/")) {
-        let command: { default: new () => BaseCommand } = await import(`./discordServer/commands/commands/${file}`);
+        let command: { default: new () => Command } = await import(`./discordServer/commands/commands/${file}`);
         commands.push(new command.default().commandBuilder.toJSON());
     }
 

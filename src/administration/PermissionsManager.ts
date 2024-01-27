@@ -16,7 +16,7 @@ export class PermissionsManager {
     }
 
     public static async getUserBanned(userId: string): Promise<boolean> {
-        const userBanData = (await Application.instance.collections.auth.findOne({
+        const userBanData = (await Application.instance.collections.bannedUsers.findOne({
             userId: userId
         })) as unknown as MongoModels.BannedUser | null;
 

@@ -1,6 +1,6 @@
 // prettier-ignore
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption, SlashCommandStringOption } from "discord.js";
-import { BaseCRUDCommand } from "../BaseCRUDCommand.js";
+import { CRUDCommand } from "../CRUDCommand.js";
 import { PermissionsManager } from "../../../administration/PermissionsManager.js";
 import { CommandInteraction, CommandOptions, InteractionReply } from "../../../dto/InteractionArguments.js";
 import { Authlevel } from "../../../dto/AuthLevel.js";
@@ -10,10 +10,8 @@ import { ISchedule } from "../../../dto/Schedule.js";
 import { ScheduleFormatter } from "../../../UI/ScheduleFormatter.js";
 import { ModalLoader } from "../ModalLoader.js";
 import { Logger } from "../../../logging/Logger.js";
-import Modal_ScheduleUpload from "../modals/Modal_UploadSchedule.js";
-import fs from "fs";
 
-class Command_Schedule extends BaseCRUDCommand {
+class Command_Schedule extends CRUDCommand {
     // prettier-ignore
     public commandBuilder = new SlashCommandBuilder()
         .setName("schedule")
@@ -101,19 +99,15 @@ class Command_Schedule extends BaseCRUDCommand {
             Logger.warn("Was not able to find a modal!");
             return `500 - Internal Server Error`;
         }
-        try {
-            await interaction.showModal(new Modal_ScheduleUpload().modalBuilder);
-        } catch (e) {
-            console.log(e);
-            fs.writeFileSync("./debug.json", JSON.stringify(e, null, "\t"));
-        }
+
+        await interaction.showModal(modalToShow.modalBuilder);
         return null;
     }
 
     async replyDelete(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const searchUserId: string = options.getUser("user")?.id || executorId;
 
-        const schedule = (await Application.instance.collections.bannedUsers.findOne({ userId: searchUserId })) as unknown as MongoModels.BannedUser | null;
+        const schedule = (await Application.instance.collections.schedules.findOne({ userId: searchUserId })) as unknown as MongoModels.Schedule | null;
         if (schedule == null) {
             return "**You do not have a schedule registered!**";
         }
@@ -132,7 +126,7 @@ class Command_Schedule extends BaseCRUDCommand {
         let stringOutput = "# Registered schedules:\n";
 
         for (const schedule of schedules) {
-            stringOutput += `@<${schedule.userId}> with ID \`${schedule.userId}\`\n`;
+            stringOutput += `<@${schedule.userId}> with ID \`${schedule.userId}\`\n`;
         }
 
         return { content: stringOutput, ephemeral: true, allowedMentions: { users: [], roles: [] } };
@@ -149,7 +143,7 @@ class Command_Schedule extends BaseCRUDCommand {
         schedule.displayName = options.getString("display_name", true);
         await Application.instance.collections.schedules.replaceOne({ userId: userId }, schedule);
 
-        return "**Successfully replaced display name!";
+        return "**Successfully replaced display name!**";
     }
 }
 

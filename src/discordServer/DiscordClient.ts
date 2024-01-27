@@ -3,7 +3,8 @@ import { CommandLoader } from "./commands/CommandLoader.js";
 import { ModalLoader } from "./commands/ModalLoader.js";
 import { Application } from "../Application.js";
 import { Logger } from "../logging/Logger.js";
-import { PeriodicMessage } from "./periodicMessages/PeriodicMessage.js";
+import { PeriodicMessage_Schedules } from "./periodicMessages/PeriodicMessage_Schedules.js";
+import { PeriodicMessage } from "./PeriodicMessage.js";
 
 export class DiscordClient {
     public client!: Client;
@@ -27,7 +28,7 @@ export class DiscordClient {
 
         await this.client.login(Application.instance.env.token);
 
-        this.periodicMessage = new PeriodicMessage(Application.instance.env.updateChannelId);
+        this.periodicMessage = new PeriodicMessage_Schedules(Application.instance.env.updateChannelId);
     }
 
     private onReady() {

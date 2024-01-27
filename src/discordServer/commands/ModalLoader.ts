@@ -1,5 +1,5 @@
 import fs from "fs";
-import BaseModal from "./BaseModal.js";
+import BaseModal from "./Modal.js";
 
 export class ModalLoader {
     public static modals: BaseModal[] = [];

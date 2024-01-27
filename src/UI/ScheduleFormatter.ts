@@ -43,7 +43,8 @@ export class ScheduleFormatter {
     }
 
     public static async FormatSchedulesAsEmbed(rawSchedules: Schedule[]): Promise<EmbedBuilder> {
-        const currentDate = new Date();
+        const currentDate = new Date(2024, 0, 29);
+        const currentTime = new Date();
         currentDate.setHours(0, 0, 0, 0);
         const daysoffModel = (await Application.instance.collections.daysoff.find({ date: currentDate }).toArray()) as MongoModels.Dayoff[];
         const daysoff: Dayoff[] = [];
@@ -64,13 +65,13 @@ export class ScheduleFormatter {
 
         // If general day off
         for (const dayoff of daysoff) {
-            if ((dayoff.affectedSchools = Schools.All)) {
+            if (dayoff.affectedSchools == Schools.All) {
                 return new EmbedBuilder().setTitle(`No school today`).setDescription(`Reason: ${dayoff.reason}`);
             }
         }
 
         const dayKey = WeekdayToKeys[currentDate.getDay()] as Weekday;
-        const currentTimeAsNum = currentDate.getHours() + currentDate.getMinutes() / 60;
+        const currentTimeAsNum = currentTime.getHours() + currentTime.getMinutes() / 60;
 
         // Find last ending time
         let absoluteEndTime = -1;
@@ -100,7 +101,7 @@ export class ScheduleFormatter {
     private static appendStudentToFields(schedule: ISchedule, daysoff: Dayoff[], dayKey: Weekday, fields: EmbedField[], time: number): true {
         for (const dayoff of daysoff) {
             if (schedule.school == dayoff.affectedSchools) {
-                fields.push({ name: schedule.displayName, value: "No school today", inline: true });
+                fields.push({ name: schedule.displayName, value: "Day off today", inline: true });
                 return true;
             }
         }
@@ -119,9 +120,9 @@ export class ScheduleFormatter {
             fields.push({
                 name: schedule.displayName,
                 value:
-                    (time >= nextCourse.startTime - 0.25 ? "" : `**Class starting soon**`) +
+                    (time >= nextCourse.startTime - 0.25 ? "" : `**Class starting soon**\n`) +
                     `**Has not begun yet**\n` +
-                    `**Starts at:** \`${TimeFormatter.decimalHoursToHumanReadable(nextCourse.startTime)}\`\n` +
+                    `**Starts at:** \`[${TimeFormatter.decimalHoursToHumanReadable(nextCourse.startTime)}]\`\n` +
                     `**Starts with:** __${nextCourseMeta.title}__\n` +
                     `**Ends class at:** \`[${TimeFormatter.decimalHoursToHumanReadable(nextCourse.endTime)}]\`\n` +
                     `**Ends day at:** \`[${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}]\``,
@@ -147,13 +148,13 @@ export class ScheduleFormatter {
                 fields.push({
                     name: schedule.displayName,
                     value:
-                        (time >= course.startTime - 0.25 ? "" : `**Class starting soon**`) +
+                        (time >= course.startTime - 0.25 ? "" : `**Class starting soon**\n`) +
                         `**Currently in break**\n` +
-                        `**Until:** \`${TimeFormatter.decimalHoursToHumanReadable(course.startTime)}\`\n` +
-                        `**Next class:** __${courseMeta.title}__\n` +
-                        (course.rooms == undefined ? "" : `(${course.rooms![0]})\n)`) +
-                        `**Ends at:** \`${TimeFormatter.decimalHoursToHumanReadable(course.endTime)}\`\n` +
-                        `**Ends day at:** \`${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}\`\n`,
+                        `**Until:** \`[${TimeFormatter.decimalHoursToHumanReadable(course.startTime)}]\`\n` +
+                        `**Next class:** __${courseMeta.title}__` +
+                        ScheduleFormatter.formatRooms(course.rooms) +
+                        `**Ends at:** \`[${TimeFormatter.decimalHoursToHumanReadable(course.endTime)}]\`\n` +
+                        `**Ends day at:** \`[${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}]\`\n`,
                     inline: true
                 });
                 return true;
@@ -168,9 +169,9 @@ export class ScheduleFormatter {
             fields.push({
                 name: schedule.displayName,
                 value:
-                    `**Currently in** __${courseMeta.title}__\n` +
-                    (course.rooms == undefined ? "" : `(${course.rooms![0]})\n)`) +
-                    `**Ends at:** \`${TimeFormatter.decimalHoursToHumanReadable(course.endTime)}\`\n`,
+                    `**Currently in** __${courseMeta.title}__` +
+                    ScheduleFormatter.formatRooms(course.rooms) +
+                    `**Ends at:** \`[${TimeFormatter.decimalHoursToHumanReadable(course.endTime)}]\`\n`,
                 inline: true
             });
             return true;
@@ -203,15 +204,23 @@ export class ScheduleFormatter {
         fields.push({
             name: schedule.displayName,
             value:
-                `**Currently in** __${courseMeta.title}__\n` +
-                (course.rooms == undefined ? "" : `(${course.rooms![0]})\n)`) +
-                `**Ends at:** \`${TimeFormatter.decimalHoursToHumanReadable(course.endTime)}\`\n` +
-                (breakAt == undefined ? "" : `**Next break:** \`${TimeFormatter.decimalHoursToHumanReadable(breakAt!)}\`\n`) +
+                `**Currently in** __${courseMeta.title}__` +
+                ScheduleFormatter.formatRooms(course.rooms) +
+                `**Ends at:** \`[${TimeFormatter.decimalHoursToHumanReadable(course.endTime)}]\`\n` +
+                (breakAt == undefined ? "" : `**Next break:** \`[${TimeFormatter.decimalHoursToHumanReadable(breakAt!)}]\`\n`) +
                 `**Next class: ** __${nextCourseMeta.title}__\n` +
-                `**Ends at: ** \`${TimeFormatter.decimalHoursToHumanReadable(nextCourse.endTime)}\`\`` +
-                `**Ends day at:** \`${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}\``,
+                `**Ends at: ** \`[${TimeFormatter.decimalHoursToHumanReadable(nextCourse.endTime)}]\`\n` +
+                `**Ends day at:** \`[${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}]\``,
             inline: true
         });
         return true;
+    }
+
+    private static formatRooms(rooms: string[] | undefined) {
+        if (rooms == undefined) {
+            return "\n";
+        } else {
+            return ` (${rooms[0]})\n`;
+        }
     }
 }

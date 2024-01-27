@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, CacheType, CommandInteractionOptionResolver } from "discord.js";
-import { BaseCommand } from "../BaseCommand.js";
 import { CommandLoader } from "../CommandLoader.js";
 import { CommandInteraction, CommandOptions, InteractionReply } from "../../../dto/InteractionArguments.js";
+import { Command } from "../Command.js";
 
-class Command_Help extends BaseCommand {
+class Command_Help extends Command {
     // prettier-ignore
     public commandBuilder = new SlashCommandBuilder()
         .setName("help")

@@ -1,8 +1,8 @@
-import { SlashCommandBuilder, CacheType, ChatInputCommandInteraction, CommandInteractionOptionResolver } from "discord.js";
-import { BaseCommand } from "./BaseCommand.js";
+import { SlashCommandBuilder } from "discord.js";
+import { Command } from "./Command.js";
 import { CommandInteraction, CommandOptions, InteractionReply } from "../../dto/InteractionArguments.js";
 
-export abstract class BaseCRUDCommand extends BaseCommand {
+export abstract class CRUDCommand extends Command {
     abstract commandBuilder: Pick<SlashCommandBuilder, "name" | "description" | "toJSON">;
 
     abstract reply(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply>;

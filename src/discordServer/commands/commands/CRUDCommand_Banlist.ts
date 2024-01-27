@@ -1,15 +1,14 @@
 // prettier-ignore
-import { SlashCommandBuilder, ChatInputCommandInteraction, CacheType, CommandInteractionOptionResolver, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "discord.js";
-import fs from "fs";
-import { BaseCRUDCommand } from "../BaseCRUDCommand.js";
+import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandUserOption } from "discord.js";
 import { PermissionsManager } from "../../../administration/PermissionsManager.js";
 import { Authlevel } from "../../../dto/AuthLevel.js";
 import { Application } from "../../../Application.js";
 import { MongoModels } from "../../../dto/MongoModels.js";
 import { CommandInteraction, CommandOptions, InteractionReply } from "../../../dto/InteractionArguments.js";
 import { CRUD } from "../../../dto/CRUD.js";
+import { Command } from "../Command.js";
 
-class Command_Banlist extends BaseCRUDCommand {
+class Command_Banlist extends Command {
     // prettier-ignore
     public commandBuilder = new SlashCommandBuilder()
         .setName("banlist")
@@ -78,7 +77,7 @@ class Command_Banlist extends BaseCRUDCommand {
             userId: bannedUserId
         });
 
-        return `**Banned user <@${bannedUserId}> with ID: \`${bannedUserId}\``;
+        return `**Banned user <@${bannedUserId}> with ID:** \`${bannedUserId}\``;
     }
 
     async replyDelete(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
