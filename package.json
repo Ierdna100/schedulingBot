@@ -1,34 +1,29 @@
 {
-  "name": "schedulingbot",
-  "version": "1.0.0",
-  "description": "",
-  "type": "module",
-  "main": "app.js",
-  "scripts": {
-    "run": "node ./build/app.js",
-    "build": "npx tsc",
-    "test": "nodemon ./build/app.js",
-    "btest": "npx tsc & node ./build/app.js",
-    "ctest": "npx tsc & node ./build/utilities/registerCommands.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Ierdna100/schedulingBot.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Ierdna100/schedulingBot/issues"
-  },
-  "homepage": "https://github.com/Ierdna100/schedulingBot#readme",
-  "dependencies": {
-    "@types/dotenv": "^8.2.0",
-    "@types/logger": "^0.0.3",
-    "@types/node": "^20.8.9",
-    "discord.js": "^14.13.0",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "logging": "^3.3.0",
-    "typescript": "^5.2.2"
-  }
+    "name": "schedulingbot",
+    "version": "1.0.0",
+    "description": "`./schedules/` contains all the schedules it updates",
+    "main": "index.js",
+    "scripts": {
+        "install": "node ./build/Install.js",
+        "run": "node ./build/Application.js",
+        "register": "node ./build/RegisterCommands.js",
+        "build": "tsc",
+        "bnr": "tsc & node ./build/Application.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Ierdna100/schedulingBot.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Ierdna100/schedulingBot/issues"
+    },
+    "homepage": "https://github.com/Ierdna100/schedulingBot#readme",
+    "dependencies": {
+        "discord.js": "^14.14.1",
+        "dotenv": "^16.3.2",
+        "mongodb": "^6.3.0"
+    },
+    "type": "module"
 }
