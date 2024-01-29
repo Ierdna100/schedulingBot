@@ -52,7 +52,7 @@ class Command_Banlist extends Command {
     async replyRead(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const bannedUsersCount = await Application.instance.collections.bannedUsers.estimatedDocumentCount();
         if (bannedUsersCount == 0) {
-            return "**No users are banned!**";
+            return { content: "**No users are banned!**", ephemeral: true };
         }
 
         const bannedUsers = (await Application.instance.collections.bannedUsers.find().toArray()) as unknown as MongoModels.BannedUser[];
@@ -68,7 +68,7 @@ class Command_Banlist extends Command {
         const searchId = options.getUser("user", true).id;
         const bannedUser = (await Application.instance.collections.bannedUsers.findOne({ userId: searchId })) as unknown as MongoModels.BannedUser | null;
         if (bannedUser != null) {
-            return "User is already banned!";
+            return { content: "User is already banned!", ephemeral: true };
         }
 
         const bannedUserId = options.getUser("user", true).id;
@@ -77,7 +77,7 @@ class Command_Banlist extends Command {
             userId: bannedUserId
         });
 
-        return `**Banned user <@${bannedUserId}> with ID:** \`${bannedUserId}\``;
+        return { content: `**Banned user <@${bannedUserId}> with ID:** \`${bannedUserId}\``, ephemeral: true };
     }
 
     async replyDelete(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
@@ -85,11 +85,11 @@ class Command_Banlist extends Command {
         const bannedUser = (await Application.instance.collections.bannedUsers.findOne({ userId: searchUserId })) as unknown as MongoModels.BannedUser | null;
 
         if (bannedUser == null) {
-            return "**User was not banned!**";
+            return { content: "**User was not banned!**", ephemeral: true };
         }
 
         await Application.instance.collections.bannedUsers.deleteOne({ userId: searchUserId });
-        return "**Successfully unbanned user!**";
+        return { content: "**Successfully unbanned user!**", ephemeral: true };
     }
 }
 

@@ -85,7 +85,7 @@ class Modal_ScheduleUpload extends Modal_Base {
 
             if (parsedScheduleData.isError) {
                 return (
-                    `**Invalid schedule declaration! Please follow the instructions provided by \`/help\`. Note that you cannot upload a schedule from a mobile device, the formatting is lost.**` +
+                    `**Invalid schedule declaration! Please follow the instructions provided by \`/help\`. Note that you cannot upload a schedule from a mobile device, the formatting is lost.**\n` +
                     `\`Error: ${parsedScheduleData.message}\``
                 );
             }
@@ -94,7 +94,7 @@ class Modal_ScheduleUpload extends Modal_Base {
             parsedSchedule.userId = executorId;
         } catch (err) {
             if (err instanceof Error) {
-                Logger.error(err);
+                Application.logger.error(err);
             }
 
             return "**500 - Internal Server Error**";

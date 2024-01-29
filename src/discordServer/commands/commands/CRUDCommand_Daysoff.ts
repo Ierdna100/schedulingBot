@@ -110,7 +110,7 @@ class Command_Daysoff extends Command {
     async replyRead(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const daysoffCount = await Application.instance.collections.daysoff.estimatedDocumentCount();
         if (daysoffCount == 0) {
-            return "**No days off are registered!**";
+            return { content: "**No days off are registered!**", ephemeral: true };
         }
 
         let stringOutput = "# Days off\n";
@@ -154,18 +154,18 @@ class Command_Daysoff extends Command {
 
         const datePossibleErrorStart = TimeFormatter.stringToDate(startDayAsString);
         if (datePossibleErrorStart.isError) {
-            return datePossibleErrorStart.message;
+            return { content: datePossibleErrorStart.message, ephemeral: true };
         }
         const startDate = datePossibleErrorStart.date;
 
         const datePossibleErrorEnd = TimeFormatter.stringToDate(endDayAsString);
         if (datePossibleErrorEnd.isError) {
-            return datePossibleErrorEnd.message;
+            return { content: datePossibleErrorEnd.message, ephemeral: true };
         }
         const endDate = datePossibleErrorEnd.date;
 
         if (endDate.getTime() < startDate.getTime()) {
-            return "**Starting date provided occurs before ending date!**";
+            return { content: "**Starting date provided occurs before ending date!**", ephemeral: true };
         }
 
         const daysoff: Dayoff[] = [];
@@ -178,7 +178,7 @@ class Command_Daysoff extends Command {
         }
 
         await Application.instance.collections.daysoff.insertMany(daysoff);
-        return `${daysoff.length} days off were added!`;
+        return { content: `${daysoff.length} days off were added!`, ephemeral: true };
     }
 
     async replyCreate(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
@@ -189,7 +189,7 @@ class Command_Daysoff extends Command {
         const datePossibleError = TimeFormatter.stringToDate(dayAsString);
         let date;
         if (datePossibleError.isError) {
-            return datePossibleError.message;
+            return { content: datePossibleError.message, ephemeral: true };
         } else {
             date = datePossibleError.date;
         }
@@ -206,7 +206,10 @@ class Command_Daysoff extends Command {
                 affectedSchools: affectedSchools
             });
 
-            return `**Successfully added day off on \`${date.toDateString()}\` for schools \`${affectedSchools}\` for reason :** ${reason}`;
+            return {
+                content: `**Successfully added day off on \`${date.toDateString()}\` for schools \`${affectedSchools}\` for reason :** ${reason}`,
+                ephemeral: true
+            };
         }
 
         await Application.instance.collections.daysoff.replaceOne(
@@ -218,7 +221,10 @@ class Command_Daysoff extends Command {
             }
         );
 
-        return `**Successfully replaced a day off on \`${date.toDateString()}\` for schools \`${affectedSchools}\` for reason :** ${reason}`;
+        return {
+            content: `**Successfully replaced a day off on \`${date.toDateString()}\` for schools \`${affectedSchools}\` for reason :** ${reason}`,
+            ephemeral: true
+        };
     }
 
     async replyDelete(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
@@ -228,28 +234,28 @@ class Command_Daysoff extends Command {
         // String: 0000/00/00
         // CharAt: 0123456789
         if (!(dayAsString.charAt(4) == "/" && dayAsString.charAt(7) == "/")) {
-            return "**Day declaration was invalid! Please use the `YYYY/MM/DD` format!";
+            return { content: "**Day declaration was invalid! Please use the `YYYY/MM/DD` format!", ephemeral: true };
         }
 
         const year = parseInt(dayAsString.substring(0, 4));
         const month = parseInt(dayAsString.substring(5, 7)) + 1;
         const day = parseInt(dayAsString.substring(8));
 
-        if (Number.isNaN(year)) return "**Year was NaN!**";
-        if (Number.isNaN(month)) return "**Month was NaN!**";
-        if (Number.isNaN(day)) return "**Day was NaN!**";
+        if (Number.isNaN(year)) return { content: "**Year was NaN!**", ephemeral: true };
+        if (Number.isNaN(month)) return { content: "**Month was NaN!**", ephemeral: true };
+        if (Number.isNaN(day)) return { content: "**Day was NaN!**", ephemeral: true };
 
-        if (month < 1 || month > 12) return "**Month was out of bounds!**";
-        if (day < 1 || day > DaysInMonth[month]) return "**Day was out of bounds!**";
+        if (month < 1 || month > 12) return { content: "**Month was out of bounds!**", ephemeral: true };
+        if (day < 1 || day > DaysInMonth[month]) return { content: "**Day was out of bounds!**", ephemeral: true };
 
         const date = new Date(year, month, day, 0, 0, 0, 0);
 
         const existingSchedule = await Application.instance.collections.daysoff.deleteOne({ date: date, affectedSchools: affectedSchoolsAsString });
         if (existingSchedule.acknowledged && existingSchedule.deletedCount) {
-            return "**Successfully deleted day off!**";
+            return { content: "**Successfully deleted day off!**", ephemeral: true };
         }
 
-        return "**No day off found to delete**";
+        return { content: "**No day off found to delete**", ephemeral: true };
     }
 }
 

@@ -32,17 +32,19 @@ export class DiscordClient {
     }
 
     private onReady() {
-        Logger.info("Discord server started!");
-        Logger.info(`Websocket ready and connected as ${this.client.user?.tag}`);
+        Application.logger.info("Discord server started!");
+        Application.logger.info(`Websocket ready and connected as ${this.client.user?.tag}`);
     }
 
     private async onInteractionCreate(interaction: Interaction<CacheType>) {
         if (interaction.isChatInputCommand()) {
-            console.log(`Trying to handle command of name ${interaction.commandName}`);
+            Application.logger.info(
+                `Trying to handle command of name ${interaction.commandName} sent by user ${interaction.user.displayName} with ID ${interaction.user.id}`
+            );
             const command = CommandLoader.getCommandByName(interaction.commandName);
 
             if (command == undefined) {
-                Logger.warn(`Command ${interaction.commandName} is not handled!`);
+                Application.logger.error(new Error(`Command ${interaction.commandName} is not handled!`));
                 await interaction.reply({ content: "`500 - Internal Server Error`" });
                 return;
             }
@@ -51,7 +53,6 @@ export class DiscordClient {
             const options = interaction.options;
             const replyMessage = await command.reply(interaction, userId, options);
 
-            console.log(`Interaction reply is: ${replyMessage}`);
             if (replyMessage != null) {
                 interaction.reply(replyMessage);
             }
@@ -62,7 +63,7 @@ export class DiscordClient {
             const modal = ModalLoader.getModalByCustomId(interaction.customId);
 
             if (modal == undefined) {
-                Logger.warn(`Modal ${interaction.customId} is not handled!`);
+                Application.logger.error(new Error(`Modal ${interaction.customId} is not handled!`));
                 await interaction.reply({ content: "`500 - Internal Server Error`" });
                 return;
             }
@@ -79,6 +80,6 @@ export class DiscordClient {
     }
 
     private async onError(error: Error) {
-        Logger.error(error);
+        Application.logger.error(error);
     }
 }

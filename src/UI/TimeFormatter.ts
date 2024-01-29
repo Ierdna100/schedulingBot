@@ -28,7 +28,8 @@ export class TimeFormatter {
     }
 
     public static dateToScheduleDatestamp(date: Date): string {
-        const schoolWeek = TimeFormatter.getWeekOfYear(date) - Application.instance.env.firstWeek;
+        // + 1 because its 1 indexed. Week 5 - Starting week 4 = 2nd week
+        const schoolWeek = TimeFormatter.getWeekOfYear(date) - Application.instance.env.firstWeek + 1;
         return `${DaysOfTheWeek[date.getDay()]} ${TimeFormatter.formatOrdinal(date.getDate())} of ${MonthsOfTheYear[date.getMonth()]} - Week ${schoolWeek}`;
     }
 

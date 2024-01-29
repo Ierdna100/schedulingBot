@@ -5,9 +5,9 @@ import * as MongoDB from "mongodb";
 
 export class Application {
     public static instance: Application;
+    public static logger: Logger;
 
     public env: EnvFileFields;
-    public logger: Logger;
     public discordClient: DiscordClient;
 
     private mongClient: MongoDB.MongoClient;
@@ -18,8 +18,9 @@ export class Application {
         Application.instance = this;
 
         this.env = EnvManager.config();
+        Application.logger = new Logger();
+        Application.logger.info("Server started!");
 
-        this.logger = new Logger();
         this.discordClient = new DiscordClient();
         this.mongClient = new MongoDB.MongoClient(this.env.dbConnectionString);
         this.mongClient.connect();

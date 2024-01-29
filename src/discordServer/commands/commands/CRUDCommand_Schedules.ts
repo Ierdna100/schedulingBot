@@ -9,14 +9,12 @@ import { MongoModels } from "../../../dto/MongoModels.js";
 import { ISchedule } from "../../../dto/Schedule.js";
 import { ScheduleFormatter } from "../../../UI/ScheduleFormatter.js";
 import { ModalLoader } from "../ModalLoader.js";
-import { Logger } from "../../../logging/Logger.js";
 
 class Command_Schedule extends CRUDCommand {
     // prettier-ignore
     public commandBuilder = new SlashCommandBuilder()
         .setName("schedule")
         .setDescription("Manage schedules")
-        .setDefaultMemberPermissions("8")
         .addSubcommand(new SlashCommandSubcommandBuilder()
             .setName("upload")
             .setDescription("Upload or update a schedule"))
@@ -48,16 +46,18 @@ class Command_Schedule extends CRUDCommand {
 
     async reply(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         if (await PermissionsManager.getUserBanned(executorId)) {
-            return { content: "**You are banned! You cannot use this command.**" };
+            Application.logger.info(`User with ID ${executorId} was banned, could not use schedules command`);
+            return { content: "**You are banned! You cannot use this command.**", ephemeral: true };
         }
 
         const destinator = options.getUser("user");
         if (destinator != null && executorId != destinator.id && (await PermissionsManager.getUserAuthLevel(executorId)) != Authlevel.admin) {
-            return "**You are not an administrator! You can only modify your own schedule!**";
+            Application.logger.info(`User with ID ${executorId} was not admin, could not use schedules command`);
+            return { content: "**You are not an administrator! You can only modify your own schedule!**", ephemeral: true };
         }
 
         const subcommand = options.getSubcommand(true) as "upload" | "remove" | "get" | "getall" | "setdisplayname";
-
+        Application.logger.info(`User ${executorId} executed schedule command with subcommand ${subcommand}`);
         let returnVal;
         switch (subcommand) {
             case "upload":
@@ -86,7 +86,8 @@ class Command_Schedule extends CRUDCommand {
 
         const schedule: ISchedule | null = (await Application.instance.collections.schedules.findOne({ userId: userId })) as MongoModels.Schedule | null;
         if (schedule == null) {
-            return "**You do not have a schedule registered!**";
+            Application.logger.info(`User ${executorId} had no schedule registered`);
+            return { content: "**You do not have a schedule registered!**", ephemeral: true };
         }
 
         return { content: ScheduleFormatter.formatFullSchedule(schedule) };
@@ -96,8 +97,8 @@ class Command_Schedule extends CRUDCommand {
         const modalToShow = ModalLoader.getModalByCustomId("schedule_modal");
 
         if (modalToShow == undefined) {
-            Logger.warn("Was not able to find a modal!");
-            return `500 - Internal Server Error`;
+            Application.logger.error(new Error("Was not able to find a modal!"));
+            return { content: `500 - Internal Server Error`, ephemeral: true };
         }
 
         await interaction.showModal(modalToShow.modalBuilder);
@@ -109,17 +110,20 @@ class Command_Schedule extends CRUDCommand {
 
         const schedule = (await Application.instance.collections.schedules.findOne({ userId: searchUserId })) as unknown as MongoModels.Schedule | null;
         if (schedule == null) {
-            return "**You do not have a schedule registered!**";
+            Application.logger.info(`User ${executorId} had no schedule registered`);
+            return { content: "**You do not have a schedule registered!**", ephemeral: true };
         }
 
         await Application.instance.collections.schedules.deleteOne({ userId: searchUserId });
-        return "**Successfully deleted your schedule!**";
+        Application.logger.info(`User ${executorId} deleted their schedule`);
+        return { content: "**Successfully deleted your schedule!**", ephemeral: true };
     }
 
     async replyReadAll(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const registeredSchedulesCount = await Application.instance.collections.schedules.estimatedDocumentCount();
         if (registeredSchedulesCount == 0) {
-            return "**No schedules are registered!**";
+            Application.logger.info(`User ${executorId} read all schedules, but none were registered`);
+            return { content: "**No schedules are registered!**", ephemeral: true };
         }
 
         const schedules = (await Application.instance.collections.schedules.find().toArray()) as unknown as MongoModels.Schedule[];
@@ -129,6 +133,7 @@ class Command_Schedule extends CRUDCommand {
             stringOutput += `<@${schedule.userId}> with ID \`${schedule.userId}\`\n`;
         }
 
+        Application.logger.info(`User ${executorId} read all schedules, there were ${schedules.length} registered`);
         return { content: stringOutput, ephemeral: true, allowedMentions: { users: [], roles: [] } };
     }
 
@@ -137,13 +142,16 @@ class Command_Schedule extends CRUDCommand {
 
         const schedule: ISchedule | null = (await Application.instance.collections.schedules.findOne({ userId: userId })) as MongoModels.Schedule | null;
         if (schedule == null) {
-            return "**You do not have a schedule registered!**";
+            Application.logger.info(`User ${executorId} had no schedule registered`);
+            return { content: "**You do not have a schedule registered!**", ephemeral: true };
         }
 
+        const oldDisplayName = schedule.displayName;
         schedule.displayName = options.getString("display_name", true);
         await Application.instance.collections.schedules.replaceOne({ userId: userId }, schedule);
 
-        return "**Successfully replaced display name!**";
+        Application.logger.info(`User ${executorId} replaced display name from "${oldDisplayName}" to "${schedule.displayName}"`);
+        return { content: "**Successfully replaced display name!**", ephemeral: true };
     }
 }
 

@@ -38,6 +38,8 @@ export abstract class PeriodicMessage {
             }
         }
 
+        Application.logger.info(`Periodic message of type ${this.messageType} initialized!`);
+
         await this.fetchNewestData();
         await this.updateMessage();
     }
@@ -65,6 +67,8 @@ export abstract class PeriodicMessage {
             type: this.messageType,
             messageId: this.messageToUpdate.id
         });
+
+        Application.logger.info(`Periodic message of type ${this.messageType} created!`);
     }
 
     public abstract fetchNewestData(): Promise<void>;

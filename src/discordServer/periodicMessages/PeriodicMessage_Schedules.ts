@@ -20,7 +20,7 @@ export class PeriodicMessage_Schedules extends PeriodicMessage {
         }
 
         const embed = (await ScheduleFormatter.FormatSchedulesAsEmbed(this.schedulesInMemory!))
-            .setColor(EmbedColors.blue)
+            .setColor(EmbedColors.cyan)
             .setTimestamp(new Date())
             .setFooter({ text: 'Want your name and schedule to appear here? Type "/help" and follow the instructions!' });
 

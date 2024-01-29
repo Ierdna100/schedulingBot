@@ -189,10 +189,10 @@ export class ScheduleParser {
             isError: false,
             tempCourses: {
                 courseId: courseId,
-                courseCode: courseCode,
-                group: group,
-                title: title,
-                teacher: teacher,
+                courseCode: courseCode.trim(),
+                group: group.trim(),
+                title: title.trim(),
+                teacher: teacher.trim(),
                 courses: coursesToAdd
             }
         };
@@ -206,7 +206,7 @@ export class ScheduleParser {
                 courseId: tempCourse.courseId,
                 group: tempCourse.group,
                 courseCode: tempCourse.courseCode,
-                title: tempCourse.title,
+                title: tempCourse.title.trim(),
                 teacher: tempCourse.teacher
             });
 

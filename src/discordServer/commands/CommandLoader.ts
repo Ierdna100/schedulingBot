@@ -1,5 +1,6 @@
 import fs from "fs";
 import { Command } from "./Command.js";
+import { Application } from "../../Application.js";
 
 export class CommandLoader {
     public static commands: Command[] = [];
@@ -13,6 +14,8 @@ export class CommandLoader {
             let command: { default: new () => Command } = await import(`./commands/${commandFileName}`);
             CommandLoader.commands.push(new command.default());
         }
+
+        Application.logger.info("Commands loaded!");
     }
 
     public static getCommandByName(name: string): Command | undefined {
