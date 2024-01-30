@@ -86,7 +86,7 @@ export class ScheduleFormatter {
         }
 
         // Everyone finished
-        if (absoluteEndTime == -1 || absoluteEndTime < currentTimeAsNum) {
+        if (absoluteEndTime == -1 || currentTimeAsNum >= absoluteEndTime) {
             return new EmbedBuilder().setTitle(`Everyone finished today`);
         }
 
@@ -116,7 +116,7 @@ export class ScheduleFormatter {
         }
 
         // Student has no classes today or finished
-        if (schedule.finishesAt[dayKey] == null || time > schedule.finishesAt[dayKey]!) {
+        if (schedule.finishesAt[dayKey] == null || time >= schedule.finishesAt[dayKey]!) {
             fields.push({ name: schedule.displayName, value: `${ANSI.green}Day finished`, inline: true });
             return true;
         }
