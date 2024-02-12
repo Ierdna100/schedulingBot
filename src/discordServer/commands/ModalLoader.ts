@@ -1,5 +1,6 @@
 import fs from "fs";
 import BaseModal from "./Modal.js";
+import { Application } from "../../Application.js";
 
 export class ModalLoader {
     public static modals: BaseModal[] = [];
@@ -13,6 +14,8 @@ export class ModalLoader {
             let modal: { default: new () => BaseModal } = await import(`./modals/${modalFilename}`);
             ModalLoader.modals.push(new modal.default());
         }
+
+        Application.logger.info("Modals loaded!");
     }
 
     public static getModalByCustomId(id: string): BaseModal | undefined {

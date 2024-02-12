@@ -19,7 +19,7 @@ class Command_Help extends Command {
             stringOutput += `\`/${commandName}\` - ${commandDescription}\n`;
         }
 
-        return stringOutput;
+        return { content: stringOutput, ephemeral: true };
     }
 }
 
