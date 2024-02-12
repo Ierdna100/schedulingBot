@@ -44,8 +44,6 @@ export class ScheduleFormatter {
     }
 
     public static async formatSchedulesAsEmbed(rawSchedules: Schedule[], currentTime = new Date(), currentDate = new Date()): Promise<ScheduleFormatData> {
-        const currentDate = new Date();
-        const currentTime = new Date();
         currentDate.setHours(0, 0, 0, 0);
         const daysoffModel = (await Application.instance.collections.daysoff.find({ date: currentDate }).toArray()) as MongoModels.Dayoff[];
         const daysoff: Dayoff[] = [];
@@ -106,7 +104,7 @@ export class ScheduleFormatter {
                 inline: field.inline
             });
         }
-      
+
         return {
             embed: new EmbedBuilder().setTitle(`Schedules for today`).setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate)).setFields(finalFields),
             generateNextDay: false
