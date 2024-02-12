@@ -48,6 +48,9 @@ export class ScheduleFormatter {
         const daysoffModel = (await Application.instance.collections.daysoff.find({ date: currentDate }).toArray()) as MongoModels.Dayoff[];
         const daysoff: Dayoff[] = [];
 
+        // If dates are equal, it means this is the same day as the one we're processing
+        const relativeDay = new Date().getDate() == currentDate.getDate() ? "today" : "tomorrow";
+
         // Construct daysoff
         for (const dayoffModel of daysoffModel) {
             daysoff.push({
@@ -60,13 +63,13 @@ export class ScheduleFormatter {
         // If Saturday or Sunday
         const currentDay = currentDate.getDay();
         if (currentDay == Weekdays.saturday || currentDay == Weekdays.sunday) {
-            return { embed: new EmbedBuilder().setTitle(`No school today`), generateNextDay: currentDay == Weekdays.sunday };
+            return { embed: new EmbedBuilder().setTitle(`No school ${relativeDay}`), generateNextDay: currentDay == Weekdays.sunday };
         }
 
         // If general day off
         for (const dayoff of daysoff) {
             if (dayoff.affectedSchools == Schools.All) {
-                return { embed: new EmbedBuilder().setTitle(`No school today`).setDescription(`Reason: ${dayoff.reason}`), generateNextDay: true };
+                return { embed: new EmbedBuilder().setTitle(`No school ${relativeDay}`).setDescription(`Reason: ${dayoff.reason}`), generateNextDay: true };
             }
         }
 
@@ -93,7 +96,7 @@ export class ScheduleFormatter {
 
         const fields: EmbedField[] = [];
         for (const schedule of rawSchedules) {
-            this.appendStudentToFields(schedule, daysoff, dayKey, fields, currentTimeAsNum);
+            this.appendStudentToFields(schedule, daysoff, dayKey, fields, currentTimeAsNum, relativeDay);
         }
 
         const finalFields: EmbedField[] = [];
@@ -106,23 +109,26 @@ export class ScheduleFormatter {
         }
 
         return {
-            embed: new EmbedBuilder().setTitle(`Schedules for today`).setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate)).setFields(finalFields),
+            embed: new EmbedBuilder()
+                .setTitle(`Schedules for ${relativeDay}`)
+                .setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate))
+                .setFields(finalFields),
             generateNextDay: false
         };
     }
 
-    private static appendStudentToFields(schedule: ISchedule, daysoff: Dayoff[], dayKey: Weekday, fields: EmbedField[], time: number): true {
+    private static appendStudentToFields(schedule: ISchedule, daysoff: Dayoff[], dayKey: Weekday, fields: EmbedField[], time: number, relativeDay: string) {
         for (const dayoff of daysoff) {
             if (schedule.school == dayoff.affectedSchools) {
-                fields.push({ name: schedule.displayName, value: `${ANSI.green}Day off today`, inline: true });
-                return true;
+                fields.push({ name: schedule.displayName, value: `${ANSI.green}Day off ${relativeDay}`, inline: true });
+                return;
             }
         }
 
         // Student has no classes today or finished
         if (schedule.finishesAt[dayKey] == null || time >= schedule.finishesAt[dayKey]!) {
             fields.push({ name: schedule.displayName, value: `${ANSI.green}Day finished`, inline: true });
-            return true;
+            return;
         }
 
         // Student has not begun today
@@ -142,7 +148,7 @@ export class ScheduleFormatter {
                     `Day end:   [${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}]`,
                 inline: true
             });
-            return true;
+            return;
         }
 
         // Finding out current status
@@ -172,7 +178,7 @@ export class ScheduleFormatter {
                         `Day end:   [${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}]\n`,
                     inline: true
                 });
-                return true;
+                return;
             }
         }
 
@@ -190,7 +196,7 @@ export class ScheduleFormatter {
                     `Day end:   [${TimeFormatter.decimalHoursToHumanReadable(course.endTime)}]\n`,
                 inline: true
             });
-            return true;
+            return;
         }
 
         // Is in class
@@ -231,7 +237,7 @@ export class ScheduleFormatter {
                 `Day end:   [${TimeFormatter.decimalHoursToHumanReadable(schedule.finishesAt[dayKey]!)}]`,
             inline: true
         });
-        return true;
+        return;
     }
 
     private static formatRooms(rooms: string[] | undefined) {

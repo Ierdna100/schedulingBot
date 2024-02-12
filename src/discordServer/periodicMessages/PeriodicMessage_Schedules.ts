@@ -32,7 +32,7 @@ export class PeriodicMessage_Schedules extends PeriodicMessage {
 
             const dataForTomorrow = await ScheduleFormatter.formatSchedulesAsEmbed(this.schedulesInMemory!, midnightForNextDay, midnightForNextDay);
 
-            embedsToSend.push(dataForTomorrow.embed.setColor(EmbedColors.cyan));
+            embedsToSend.push(dataForTomorrow.embed.setColor(EmbedColors.purple));
         }
 
         embedsToSend[embedsToSend.length - 1]
