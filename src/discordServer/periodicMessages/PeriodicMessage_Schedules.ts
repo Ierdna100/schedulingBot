@@ -23,7 +23,7 @@ export class PeriodicMessage_Schedules extends PeriodicMessage {
         const embedsToSend: EmbedBuilder[] = [];
         const currentDate = new Date();
 
-        const dataForToday = await ScheduleFormatter.formatSchedulesAsEmbed(this.schedulesInMemory!, currentDate, currentDate);
+        const dataForToday = await ScheduleFormatter.formatSchedulesAsEmbed(this.schedulesInMemory!, new Date(currentDate), new Date(currentDate));
         embedsToSend.push(dataForToday.embed.setColor(EmbedColors.cyan));
 
         if (dataForToday.generateNextDay) {
