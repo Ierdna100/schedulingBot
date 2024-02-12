@@ -47,6 +47,7 @@ export class ScheduleFormatter {
         currentDate.setHours(0, 0, 0, 0);
         const daysoffModel = (await Application.instance.collections.daysoff.find({ date: currentDate }).toArray()) as MongoModels.Dayoff[];
         const daysoff: Dayoff[] = [];
+        const dateString = TimeFormatter.dateToScheduleDatestamp(currentDate);
 
         // If dates are equal, it means this is the same day as the one we're processing
         const relativeDay = new Date().getDate() == currentDate.getDate() ? "today" : "tomorrow";
@@ -63,13 +64,19 @@ export class ScheduleFormatter {
         // If Saturday or Sunday
         const currentDay = currentDate.getDay();
         if (currentDay == Weekdays.saturday || currentDay == Weekdays.sunday) {
-            return { embed: new EmbedBuilder().setTitle(`No school ${relativeDay}`), generateNextDay: currentDay == Weekdays.sunday };
+            return {
+                embed: new EmbedBuilder().setTitle(`No school ${relativeDay}`).setDescription(dateString),
+                generateNextDay: currentDay == Weekdays.sunday
+            };
         }
 
         // If general day off
         for (const dayoff of daysoff) {
             if (dayoff.affectedSchools == Schools.All) {
-                return { embed: new EmbedBuilder().setTitle(`No school ${relativeDay}`).setDescription(`Reason: ${dayoff.reason}`), generateNextDay: true };
+                return {
+                    embed: new EmbedBuilder().setTitle(`No school ${relativeDay} • ${dateString}`).setDescription(`Reason: ${dayoff.reason}`),
+                    generateNextDay: true
+                };
             }
         }
 
@@ -91,7 +98,7 @@ export class ScheduleFormatter {
 
         // Everyone finished
         if (absoluteEndTime == -1 || absoluteEndTime < currentTimeAsNum) {
-            return { embed: new EmbedBuilder().setTitle(`Everyone finished today`), generateNextDay: currentDay != Weekdays.friday };
+            return { embed: new EmbedBuilder().setTitle(`Everyone finished today`).setDescription(dateString), generateNextDay: currentDay != Weekdays.friday };
         }
 
         const fields: EmbedField[] = [];
@@ -109,10 +116,7 @@ export class ScheduleFormatter {
         }
 
         return {
-            embed: new EmbedBuilder()
-                .setTitle(`Schedules for ${relativeDay}`)
-                .setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate))
-                .setFields(finalFields),
+            embed: new EmbedBuilder().setTitle(`Schedules for ${relativeDay}`).setDescription(dateString).setFields(finalFields),
             generateNextDay: false
         };
     }
