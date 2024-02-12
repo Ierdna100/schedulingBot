@@ -5,6 +5,8 @@ import { Application } from "../Application.js";
 import { MongoModels } from "../dto/MongoModels.js";
 import { Schools } from "../dto/Schools.js";
 import { Dayoff } from "../dto/Dayoff.js";
+import { ScheduleFormatData } from "../dto/ScheduleFormatData.js";
+import { Weekdays } from "../dto/Weekdays.js";
 import { ANSI } from "../dto/ANSIColors.js";
 
 export class ScheduleFormatter {
@@ -41,7 +43,7 @@ export class ScheduleFormatter {
         return stringOutput;
     }
 
-    public static async FormatSchedulesAsEmbed(rawSchedules: Schedule[]): Promise<EmbedBuilder> {
+    public static async formatSchedulesAsEmbed(rawSchedules: Schedule[], currentTime = new Date(), currentDate = new Date()): Promise<ScheduleFormatData> {
         const currentDate = new Date();
         const currentTime = new Date();
         currentDate.setHours(0, 0, 0, 0);
@@ -57,15 +59,16 @@ export class ScheduleFormatter {
             });
         }
 
-        // If sunday/saturday
-        if (currentDate.getDay() == 0 || currentDate.getDay() == 6) {
-            return new EmbedBuilder().setTitle(`No school today`);
+        // If Saturday or Sunday
+        const currentDay = currentDate.getDay();
+        if (currentDay == Weekdays.saturday || currentDay == Weekdays.sunday) {
+            return { embed: new EmbedBuilder().setTitle(`No school today`), generateNextDay: currentDay == Weekdays.sunday };
         }
 
         // If general day off
         for (const dayoff of daysoff) {
             if (dayoff.affectedSchools == Schools.All) {
-                return new EmbedBuilder().setTitle(`No school today`).setDescription(`Reason: ${dayoff.reason}`);
+                return { embed: new EmbedBuilder().setTitle(`No school today`).setDescription(`Reason: ${dayoff.reason}`), generateNextDay: true };
             }
         }
 
@@ -86,8 +89,8 @@ export class ScheduleFormatter {
         }
 
         // Everyone finished
-        if (absoluteEndTime == -1 || currentTimeAsNum >= absoluteEndTime) {
-            return new EmbedBuilder().setTitle(`Everyone finished today`);
+        if (absoluteEndTime == -1 || absoluteEndTime < currentTimeAsNum) {
+            return { embed: new EmbedBuilder().setTitle(`Everyone finished today`), generateNextDay: currentDay != Weekdays.friday };
         }
 
         const fields: EmbedField[] = [];
@@ -103,8 +106,11 @@ export class ScheduleFormatter {
                 inline: field.inline
             });
         }
-
-        return new EmbedBuilder().setTitle(`Schedules for today`).setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate)).setFields(finalFields);
+      
+        return {
+            embed: new EmbedBuilder().setTitle(`Schedules for today`).setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate)).setFields(finalFields),
+            generateNextDay: false
+        };
     }
 
     private static appendStudentToFields(schedule: ISchedule, daysoff: Dayoff[], dayKey: Weekday, fields: EmbedField[], time: number): true {
