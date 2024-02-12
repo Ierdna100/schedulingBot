@@ -1,12 +1,12 @@
 import { EmbedBuilder, EmbedField } from "discord.js";
 import { ISchedule, Schedule, Weekday, WeekdayEnum, WeekdayToKeys } from "../dto/Schedule.js";
 import { TimeFormatter } from "./TimeFormatter.js";
-import { EmbedColors } from "../dto/EmbedColors.js";
-import { DaysOfTheWeek, MonthsOfTheYear, Ordinals } from "../dto/Days.js";
 import { Application } from "../Application.js";
 import { MongoModels } from "../dto/MongoModels.js";
 import { Schools } from "../dto/Schools.js";
 import { Dayoff } from "../dto/Dayoff.js";
+import { ScheduleFormatData } from "../dto/ScheduleFormatData.js";
+import { Weekdays } from "../dto/Weekdays.js";
 
 export class ScheduleFormatter {
     public static formatFullSchedule(schedule: ISchedule): string {
@@ -42,9 +42,7 @@ export class ScheduleFormatter {
         return stringOutput;
     }
 
-    public static async FormatSchedulesAsEmbed(rawSchedules: Schedule[]): Promise<EmbedBuilder> {
-        const currentDate = new Date(2024, 0, 29);
-        const currentTime = new Date();
+    public static async formatSchedulesAsEmbed(rawSchedules: Schedule[], currentTime = new Date(), currentDate = new Date()): Promise<ScheduleFormatData> {
         currentDate.setHours(0, 0, 0, 0);
         const daysoffModel = (await Application.instance.collections.daysoff.find({ date: currentDate }).toArray()) as MongoModels.Dayoff[];
         const daysoff: Dayoff[] = [];
@@ -58,15 +56,16 @@ export class ScheduleFormatter {
             });
         }
 
-        // If sunday/saturday
-        if (currentDate.getDay() == 0 || currentDate.getDay() == 6) {
-            return new EmbedBuilder().setTitle(`No school today`);
+        // If Saturday or Sunday
+        const currentDay = currentDate.getDay();
+        if (currentDay == Weekdays.saturday || currentDay == Weekdays.sunday) {
+            return { embed: new EmbedBuilder().setTitle(`No school today`), generateNextDay: currentDay == Weekdays.sunday };
         }
 
         // If general day off
         for (const dayoff of daysoff) {
             if (dayoff.affectedSchools == Schools.All) {
-                return new EmbedBuilder().setTitle(`No school today`).setDescription(`Reason: ${dayoff.reason}`);
+                return { embed: new EmbedBuilder().setTitle(`No school today`).setDescription(`Reason: ${dayoff.reason}`), generateNextDay: true };
             }
         }
 
@@ -87,7 +86,7 @@ export class ScheduleFormatter {
 
         // Everyone finished
         if (absoluteEndTime == -1 || absoluteEndTime < currentTimeAsNum) {
-            return new EmbedBuilder().setTitle(`Everyone finished today`);
+            return { embed: new EmbedBuilder().setTitle(`Everyone finished today`), generateNextDay: currentDay != Weekdays.friday };
         }
 
         const fields: EmbedField[] = [];
@@ -95,7 +94,10 @@ export class ScheduleFormatter {
             this.appendStudentToFields(schedule, daysoff, dayKey, fields, currentTimeAsNum);
         }
 
-        return new EmbedBuilder().setTitle(`Schedules for today`).setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate)).setFields(fields);
+        return {
+            embed: new EmbedBuilder().setTitle(`Schedules for today`).setDescription(TimeFormatter.dateToScheduleDatestamp(currentDate)).setFields(fields),
+            generateNextDay: false
+        };
     }
 
     private static appendStudentToFields(schedule: ISchedule, daysoff: Dayoff[], dayKey: Weekday, fields: EmbedField[], time: number): true {

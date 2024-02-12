@@ -5,6 +5,7 @@ import { Schedule } from "../../dto/Schedule.js";
 import { ScheduleFormatter } from "../../UI/ScheduleFormatter.js";
 import { EmbedColors } from "../../dto/EmbedColors.js";
 import { PeriodicMessage } from "../PeriodicMessage.js";
+import { APIEmbed, EmbedBuilder } from "discord.js";
 
 export class PeriodicMessage_Schedules extends PeriodicMessage {
     public messageType = PeriodicMessageType.schedules;
@@ -19,12 +20,26 @@ export class PeriodicMessage_Schedules extends PeriodicMessage {
             await this.fetchNewestData();
         }
 
-        const embed = (await ScheduleFormatter.FormatSchedulesAsEmbed(this.schedulesInMemory!))
-            .setColor(EmbedColors.blue)
+        const embedsToSend: EmbedBuilder[] = [];
+        const currentDate = new Date();
+
+        const dataForToday = await ScheduleFormatter.formatSchedulesAsEmbed(this.schedulesInMemory!, currentDate, currentDate);
+        embedsToSend.push(dataForToday.embed.setColor(EmbedColors.cyan));
+
+        if (dataForToday.generateNextDay) {
+            const midnightForNextDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1);
+            midnightForNextDay.setHours(0, 0, 0, 0);
+
+            const dataForTomorrow = await ScheduleFormatter.formatSchedulesAsEmbed(this.schedulesInMemory!, midnightForNextDay, midnightForNextDay);
+
+            embedsToSend.push(dataForTomorrow.embed.setColor(EmbedColors.cyan));
+        }
+
+        embedsToSend[embedsToSend.length - 1]
             .setTimestamp(new Date())
             .setFooter({ text: 'Want your name and schedule to appear here? Type "/help" and follow the instructions!' });
 
-        this.checkMessageExistsAndUpdate({ content: "", embeds: [embed] });
+        this.checkMessageExistsAndUpdate({ content: "", embeds: embedsToSend });
 
         setTimeout(() => this.updateMessage(), Application.instance.env.updateFreqSec * 1000);
     }
