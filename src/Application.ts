@@ -36,4 +36,6 @@ export class Application {
     }
 }
 
-new Application();
+if (!process.argv.includes("--register")) {
+    new Application();
+}

@@ -5,7 +5,7 @@ import { Schedule } from "../../dto/Schedule.js";
 import { ScheduleFormatter } from "../../UI/ScheduleFormatter.js";
 import { EmbedColors } from "../../dto/EmbedColors.js";
 import { PeriodicMessage } from "../PeriodicMessage.js";
-import { APIEmbed, EmbedBuilder } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
 export class PeriodicMessage_Schedules extends PeriodicMessage {
     public messageType = PeriodicMessageType.schedules;

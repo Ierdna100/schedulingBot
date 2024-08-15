@@ -1,4 +1,11 @@
-import { CacheType, ChatInputCommandInteraction, CommandInteractionOptionResolver, InteractionReplyOptions, MessagePayload } from "discord.js";
+import {
+    BaseMessageOptions,
+    CacheType,
+    ChatInputCommandInteraction,
+    CommandInteractionOptionResolver,
+    InteractionReplyOptions,
+    MessagePayload
+} from "discord.js";
 
 export type CommandInteraction = ChatInputCommandInteraction<CacheType>;
 

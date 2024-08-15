@@ -6,9 +6,9 @@ import { Application } from "../../../Application.js";
 import { MongoModels } from "../../../dto/MongoModels.js";
 import { CommandInteraction, CommandOptions, InteractionReply } from "../../../dto/InteractionArguments.js";
 import { CRUD } from "../../../dto/CRUD.js";
-import { Command } from "../Command.js";
+import { CRUDCommand } from "../CRUDCommand.js";
 
-class Command_Banlist extends Command {
+class Command_Banlist extends CRUDCommand {
     // prettier-ignore
     public commandBuilder = new SlashCommandBuilder()
         .setName("banlist")

@@ -5,6 +5,7 @@ import { Application } from "../Application.js";
 import { Logger } from "../logging/Logger.js";
 import { PeriodicMessage_Schedules } from "./periodicMessages/PeriodicMessage_Schedules.js";
 import { PeriodicMessage } from "./PeriodicMessage.js";
+import Command_UploadHelp from "./commands/commands/Command_UploadHelp.js";
 
 export class DiscordClient {
     public client!: Client;
@@ -75,6 +76,19 @@ export class DiscordClient {
             if (replyMessage != null) {
                 interaction.reply(replyMessage);
             }
+            return;
+        }
+
+        if (interaction.isButton()) {
+            switch (interaction.customId) {
+                case "help-prev":
+                    Command_UploadHelp.onButtonPrev(interaction);
+                    break;
+                case "help-next":
+                    Command_UploadHelp.onButtonNext(interaction);
+                    break;
+            }
+
             return;
         }
     }

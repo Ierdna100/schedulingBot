@@ -10,10 +10,10 @@ import { Application } from "../../../Application.js";
 import { Dayoff } from "../../../dto/Dayoff.js";
 import { MongoModels } from "../../../dto/MongoModels.js";
 import { DaysInMonth } from "../../../dto/DaysInMonth.js";
-import { Command } from "../Command.js";
 import { TimeFormatter } from "../../../UI/TimeFormatter.js";
+import { CRUDCommand } from "../CRUDCommand.js";
 
-class Command_Daysoff extends Command {
+class Command_Daysoff extends CRUDCommand {
     // prettier-ignore
     public commandBuilder = new SlashCommandBuilder()
         .setName("daysoff")

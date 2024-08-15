@@ -2,3 +2,5 @@
 /build/
 /logs/
 .env
+/static/instructionsImages/*
+/static/instructions.json

@@ -8,6 +8,7 @@ export class ScheduleParser {
         if (rawCourses.isError) {
             return { isError: true, message: rawCourses.message };
         }
+        console.log(rawCourses);
 
         let tempCourses: TempCourse[] = [];
         for (const course of rawCourses.rawSchedule) {
@@ -37,12 +38,12 @@ export class ScheduleParser {
         let courseIndex = -1;
         let courseDataLength = 0;
         for (let line of scheduleAsLines) {
-            if (line.trim() == "") {
+            line = line.trim();
+            if (line == "") {
                 continue;
             }
-            line = line.trim();
 
-            // If the line is a new course delcaration
+            // If the line is a new course declaration
             const splitLine = line.split(" ");
             if (!splitLine[0].includes("-") && !Number.isNaN(parseInt(splitLine[0]))) {
                 // Go to next course
@@ -56,6 +57,13 @@ export class ScheduleParser {
             }
 
             // Push new data to course
+            if (courseIndex == -1) {
+                return {
+                    isError: true,
+                    message: "The course declaration looks wrong, unable to parse (courseIndex was -1)"
+                };
+            }
+
             courses[courseIndex].push(line);
             courseDataLength++;
         }

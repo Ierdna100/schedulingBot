@@ -6,7 +6,7 @@
     "scripts": {
         "install": "node ./build/Install.js",
         "run": "node ./build/Application.js",
-        "register": "node ./build/RegisterCommands.js",
+        "register": "node ./build/RegisterCommands.js --register",
         "build": "tsc",
         "bnr": "tsc & node ./build/Application.js"
     },

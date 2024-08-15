@@ -5,7 +5,6 @@ import { Command } from "./discordServer/commands/Command.js";
 
 async function refreshCommands() {
     configDotenv.config();
-
     let commands = [];
 
     for (const file of fs.readdirSync("./build/discordServer/commands/commands/")) {
@@ -16,6 +15,7 @@ async function refreshCommands() {
     const rest = new REST().setToken(process.env.TOKEN || "");
 
     console.log("Refreshing commands");
+    console.log(commands.map((e) => e.name));
 
     await rest.put(Routes.applicationCommands(process.env.CLIENT_ID || ""), { body: commands });
 
