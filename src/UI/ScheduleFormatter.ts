@@ -108,6 +108,7 @@ export class ScheduleFormatter {
         for (const schedule of rawSchedules) {
             let localDayKey = dayKey;
             console.log(schedule.displayName + " " + localDayKey);
+            console.log(currentDate);
             console.log(schedule.school);
             const flippedDay = flippedDays.find((e) => e.affectedSchools == schedule.school);
             if (flippedDays.length != 0 && flippedDay != undefined) {
