@@ -112,8 +112,8 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
                 }
 
                 schoolHasDayoff = true;
-                stringOutput += `- \`${day.date.toDateString()}\` : Usually a \`${Object.keys(Weekdays)[day.date.getDay()]}\`, has schedule for a \`${
-                    Object.keys(Weekdays)[day.replacedDay]
+                stringOutput += `- \`${day.date.toDateString()}\` : Usually a \`${Object.values(Weekdays)[day.date.getDay()]}\`, has schedule for a \`${
+                    Object.values(Weekdays)[day.replacedDay]
                 }\`\n`;
             }
         }
@@ -144,8 +144,8 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
                 replacedDay: replacedDay
             });
             return {
-                content: `Flipped day on \`${date.toISOString()}\` (It is a \`${Object.keys(Weekdays)[date.getDay()]}\` with the schedule of a \`${
-                    Object.keys(Weekdays)[replacedDay]
+                content: `Flipped day on \`${date.toISOString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
+                    Object.values(Weekdays)[replacedDay]
                 }\`) was added!`,
                 ephemeral: true
             };
@@ -161,8 +161,8 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
         );
 
         return {
-            content: `Replaced flipped day on \`${date.toISOString()}\` (It is a \`${Object.keys(Weekdays)[date.getDay()]}\` with the schedule of a \`${
-                Object.keys(Weekdays)[replacedDay]
+            content: `Replaced flipped day on \`${date.toISOString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
+                Object.values(Weekdays)[replacedDay]
             }\`) was added!`,
             ephemeral: true
         };
