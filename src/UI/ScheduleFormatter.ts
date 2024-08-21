@@ -107,12 +107,10 @@ export class ScheduleFormatter {
         const fields: EmbedField[] = [];
         for (const schedule of rawSchedules) {
             let localDayKey = dayKey;
-            console.log(schedule.displayName + " " + dayKey);
             const flippedDay = flippedDays.find((e) => e.affectedSchools == schedule.school);
             if (flippedDays.length != 0 && flippedDay != undefined) {
                 localDayKey = WeekdayToKeys[flippedDay.replacedDay - 1] as Weekday;
             }
-            console.log(schedule.displayName + " " + localDayKey);
             this.appendStudentToFields(schedule, daysoff, localDayKey, fields, currentTimeAsNum, relativeDay);
         }
 
