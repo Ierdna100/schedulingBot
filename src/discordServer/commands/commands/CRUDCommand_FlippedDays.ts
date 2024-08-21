@@ -89,7 +89,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
 
         let stringOutput = "# Flipped days\n";
 
-        const daysoffUnorderedWCtors = (await Application.instance.collections.daysoff.find().toArray()) as unknown as MongoModels.FlippedDay[];
+        const daysoffUnorderedWCtors = await Application.instance.collections.daysoff.find<MongoModels.FlippedDay>({}).toArray();
         const daysOffUnordered: FlippedDay[] = [];
         daysoffUnorderedWCtors.forEach((e) =>
             daysOffUnordered.push({

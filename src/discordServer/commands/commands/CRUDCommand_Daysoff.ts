@@ -115,7 +115,7 @@ class Command_Daysoff extends CRUDCommand {
 
         let stringOutput = "# Days off\n";
 
-        const daysoffUnorderedWCtors = (await Application.instance.collections.daysoff.find().toArray()) as unknown as MongoModels.Dayoff[];
+        const daysoffUnorderedWCtors = await Application.instance.collections.daysoff.find<MongoModels.Dayoff>({}).toArray();
         const daysOffUnordered: Dayoff[] = [];
         daysoffUnorderedWCtors.forEach((e) =>
             daysOffUnordered.push({

@@ -126,7 +126,7 @@ class Command_Schedule extends CRUDCommand {
             return { content: "**No schedules are registered!**", ephemeral: true };
         }
 
-        const schedules = (await Application.instance.collections.schedules.find().toArray()) as unknown as MongoModels.Schedule[];
+        const schedules = await Application.instance.collections.schedules.find<MongoModels.Schedule>({}).toArray();
         let stringOutput = "# Registered schedules:\n";
 
         for (const schedule of schedules) {

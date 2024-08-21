@@ -55,7 +55,7 @@ class Command_Banlist extends CRUDCommand {
             return { content: "**No users are banned!**", ephemeral: true };
         }
 
-        const bannedUsers = (await Application.instance.collections.bannedUsers.find().toArray()) as unknown as MongoModels.BannedUser[];
+        const bannedUsers = await Application.instance.collections.bannedUsers.find<MongoModels.BannedUser>({}).toArray();
         let stringOutput = "# Banned users:\n";
         for (const bannedUser of bannedUsers) {
             stringOutput += `<@${bannedUser.userId}> with ID: \`${bannedUser.userId}\`\n`;
