@@ -101,7 +101,7 @@ export class ScheduleFormatter {
             return { embed: new EmbedBuilder().setTitle(`Everyone finished today`).setDescription(dateString), generateNextDay: currentDay != Weekdays.friday };
         }
 
-        const flippedDays = await Application.instance.collections.flippedDays.find<MongoModels.FlippedDay>({}).toArray();
+        const flippedDays = await Application.instance.collections.flippedDays.find<MongoModels.FlippedDay>({ date: currentDate }).toArray();
 
         // Generates schedules and flip days depending on if their day is a flipped day
         const fields: EmbedField[] = [];
