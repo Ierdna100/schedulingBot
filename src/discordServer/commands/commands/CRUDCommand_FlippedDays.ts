@@ -144,7 +144,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
                 replacedDay: replacedDay
             });
             return {
-                content: `Flipped day on \`${date.toISOString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
+                content: `Flipped day on \`${date.toDateString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
                     Object.values(Weekdays)[replacedDay]
                 }\`) was added!`,
                 ephemeral: true
@@ -161,7 +161,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
         );
 
         return {
-            content: `Replaced flipped day on \`${date.toISOString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
+            content: `Replaced flipped day on \`${date.toDateString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
                 Object.values(Weekdays)[replacedDay]
             }\`) was added!`,
             ephemeral: true
