@@ -101,11 +101,20 @@ export class ScheduleFormatter {
             return { embed: new EmbedBuilder().setTitle(`Everyone finished today`).setDescription(dateString), generateNextDay: currentDay != Weekdays.friday };
         }
 
+        const flippedDays = await Application.instance.collections.flippedDays.find<MongoModels.FlippedDay>({}).toArray();
+
+        // Generates schedules and flip days depending on if their day is a flipped day
         const fields: EmbedField[] = [];
         for (const schedule of rawSchedules) {
-            this.appendStudentToFields(schedule, daysoff, dayKey, fields, currentTimeAsNum, relativeDay);
+            let localDayKey = dayKey;
+            const flippedDay = flippedDays.find((e) => e.affectedSchools == schedule.school);
+            if (flippedDays.length != 0 && flippedDay != undefined) {
+                localDayKey = WeekdayToKeys[flippedDay.replacedDay - 1] as Weekday;
+            }
+            this.appendStudentToFields(schedule, daysoff, localDayKey, fields, currentTimeAsNum, relativeDay);
         }
 
+        // Wraps everything around an ANSI codeblock
         const finalFields: EmbedField[] = [];
         for (const field of fields) {
             finalFields.push({
