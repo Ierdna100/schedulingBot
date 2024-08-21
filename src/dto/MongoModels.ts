@@ -17,6 +17,12 @@ export namespace MongoModels {
         userId: string;
     }
 
+    export interface FlippedDay extends Base {
+        date: string;
+        affectedSchools: Schools;
+        replacedDay: number;
+    }
+
     export interface Dayoff extends Base {
         date: string;
         reason: string;

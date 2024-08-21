@@ -29,6 +29,7 @@ export class EnvManager {
         envFileFields.coll_schedules = EnvManager.assertDefined("COLL_SCHEDULES");
         envFileFields.coll_periodicMessages = EnvManager.assertDefined("COLL_PERIODIC_MESSAGES");
         envFileFields.coll_scheduleLogs = EnvManager.assertDefined("COLL_SCHEDULE_LOGS");
+        envFileFields.coll_flippedDays = EnvManager.assertDefined("COLL_FLIPPED_DAYS");
 
         return envFileFields;
     }
@@ -76,6 +77,7 @@ export class EnvFileFields {
     public coll_schedules = "";
     public coll_periodicMessages = "";
     public coll_scheduleLogs = "";
+    public coll_flippedDays = "";
 
     constructor() {}
 }

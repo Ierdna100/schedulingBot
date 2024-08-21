@@ -231,24 +231,11 @@ class Command_Daysoff extends CRUDCommand {
         const dayAsString = options.getString("day", true);
         const affectedSchoolsAsString = options.getString("affected_school", true);
 
-        // String: 0000/00/00
-        // CharAt: 0123456789
-        if (!(dayAsString.charAt(4) == "/" && dayAsString.charAt(7) == "/")) {
-            return { content: "**Day declaration was invalid! Please use the `YYYY/MM/DD` format!", ephemeral: true };
+        const datePossibleError = TimeFormatter.stringToDate(dayAsString);
+        if (datePossibleError.isError) {
+            return { content: datePossibleError.message, ephemeral: true };
         }
-
-        const year = parseInt(dayAsString.substring(0, 4));
-        const month = parseInt(dayAsString.substring(5, 7)) + 1;
-        const day = parseInt(dayAsString.substring(8));
-
-        if (Number.isNaN(year)) return { content: "**Year was NaN!**", ephemeral: true };
-        if (Number.isNaN(month)) return { content: "**Month was NaN!**", ephemeral: true };
-        if (Number.isNaN(day)) return { content: "**Day was NaN!**", ephemeral: true };
-
-        if (month < 1 || month > 12) return { content: "**Month was out of bounds!**", ephemeral: true };
-        if (day < 1 || day > DaysInMonth[month]) return { content: "**Day was out of bounds!**", ephemeral: true };
-
-        const date = new Date(year, month, day, 0, 0, 0, 0);
+        const date = datePossibleError.date;
 
         const existingSchedule = await Application.instance.collections.daysoff.deleteOne({ date: date, affectedSchools: affectedSchoolsAsString });
         if (existingSchedule.acknowledged && existingSchedule.deletedCount) {

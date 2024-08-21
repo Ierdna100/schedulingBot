@@ -31,7 +31,8 @@ export class Application {
             daysoff: this.mongoDb.collection(this.env.coll_daysoff),
             schedules: this.mongoDb.collection(this.env.coll_schedules),
             periodicMessages: this.mongoDb.collection(this.env.coll_periodicMessages),
-            scheduleLogs: this.mongoDb.collection(this.env.coll_scheduleLogs)
+            scheduleLogs: this.mongoDb.collection(this.env.coll_scheduleLogs),
+            flippedDays: this.mongoDb.collection(this.env.coll_flippedDays)
         };
     }
 }
