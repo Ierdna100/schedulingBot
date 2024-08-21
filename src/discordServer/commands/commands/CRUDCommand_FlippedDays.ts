@@ -88,7 +88,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
 
         let stringOutput = "# Flipped days\n";
 
-        const daysoffUnorderedWCtors = await Application.instance.collections.daysoff.find<MongoModels.FlippedDay>({}).toArray();
+        const daysoffUnorderedWCtors = await Application.instance.collections.flippedDays.find<MongoModels.FlippedDay>({}).toArray();
         const daysOffUnordered: FlippedDay[] = [];
         daysoffUnorderedWCtors.forEach((e) =>
             daysOffUnordered.push({
@@ -132,13 +132,13 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
         }
         const date = datePossibleError.date;
 
-        const existingFlippedDay = await Application.instance.collections.daysoff.findOne<MongoModels.Dayoff>({
+        const existingFlippedDay = await Application.instance.collections.flippedDays.findOne<MongoModels.Dayoff>({
             date: date,
             affectedSchools: affectedSchools
         });
 
         if (existingFlippedDay == null) {
-            await Application.instance.collections.daysoff.insertOne({
+            await Application.instance.collections.flippedDays.insertOne({
                 date: date,
                 affectedSchools: affectedSchools,
                 replacedDay: replacedDay
@@ -151,7 +151,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
             };
         }
 
-        await Application.instance.collections.daysoff.replaceOne(
+        await Application.instance.collections.flippedDays.replaceOne(
             { _id: existingFlippedDay._id },
             {
                 date: date,
@@ -178,7 +178,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
         }
         const date = datePossibleError.date;
 
-        const existingSchedule = await Application.instance.collections.daysoff.deleteOne({ date: date, affectedSchools: affectedSchoolsAsString });
+        const existingSchedule = await Application.instance.collections.flippedDays.deleteOne({ date: date, affectedSchools: affectedSchoolsAsString });
         if (existingSchedule.acknowledged && existingSchedule.deletedCount) {
             return { content: "**Successfully deleted day off!**", ephemeral: true };
         }
