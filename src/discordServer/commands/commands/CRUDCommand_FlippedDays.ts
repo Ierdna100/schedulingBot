@@ -2,7 +2,7 @@ import { SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBu
 import { CommandInteraction, CommandOptions, InteractionReply } from "../../../dto/InteractionArguments.js";
 import { CRUDCommand } from "../CRUDCommand.js";
 import { CRUD } from "../../../dto/CRUD.js";
-import { Schools } from "../../../dto/Schools.js";
+import { Schools, SchoolsIdToName } from "../../../dto/Schools.js";
 import { PermissionsManager } from "../../../administration/PermissionsManager.js";
 import { Authlevel } from "../../../dto/AuthLevel.js";
 import { Application } from "../../../Application.js";
@@ -146,7 +146,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
             return {
                 content: `Flipped day on \`${date.toDateString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
                     Object.values(Weekdays)[replacedDay]
-                }\`) was added!`,
+                }\` for school ${SchoolsIdToName[affectedSchools]}) was added!`,
                 ephemeral: true
             };
         }
@@ -163,7 +163,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
         return {
             content: `Replaced flipped day on \`${date.toDateString()}\` (It is a \`${Object.values(Weekdays)[date.getDay()]}\` with the schedule of a \`${
                 Object.values(Weekdays)[replacedDay]
-            }\`) was added!`,
+            }\` for school ${SchoolsIdToName[affectedSchools]})!`,
             ephemeral: true
         };
     }
@@ -178,12 +178,12 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
         }
         const date = datePossibleError.date;
 
-        const existingSchedule = await Application.instance.collections.flippedDays.deleteOne({ date: date, affectedSchools: affectedSchoolsAsString });
-        if (existingSchedule.acknowledged && existingSchedule.deletedCount) {
-            return { content: "**Successfully deleted day off!**", ephemeral: true };
+        const existingFlippedDay = await Application.instance.collections.flippedDays.deleteOne({ date: date, affectedSchools: affectedSchoolsAsString });
+        if (existingFlippedDay.acknowledged && existingFlippedDay.deletedCount) {
+            return { content: `**Successfully deleted flipped day!** \`(${date.toDateString()})\``, ephemeral: true };
         }
 
-        return { content: "**No day off found to delete**", ephemeral: true };
+        return { content: "**No flipped day found to delete**", ephemeral: true };
     }
 }
 
