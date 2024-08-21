@@ -116,7 +116,7 @@ export class ScheduleFormatter {
                 console.log(flippedDay.affectedSchools);
                 localDayKey = WeekdayToKeys[flippedDay.replacedDay - 1] as Weekday;
             }
-            console.log(schedule.displayName + " " + dayKey);
+            console.log(schedule.displayName + " " + localDayKey);
             this.appendStudentToFields(schedule, daysoff, localDayKey, fields, currentTimeAsNum, relativeDay);
         }
 
