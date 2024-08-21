@@ -84,7 +84,7 @@ class Command_Schedule extends CRUDCommand {
     async replyRead(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const userId: string = options.getUser("user")?.id || executorId;
 
-        const schedule: ISchedule | null = (await Application.instance.collections.schedules.findOne({ userId: userId })) as MongoModels.Schedule | null;
+        const schedule: ISchedule | null = await Application.instance.collections.schedules.findOne<MongoModels.Schedule>({ userId: userId });
         if (schedule == null) {
             Application.logger.info(`User ${executorId} had no schedule registered`);
             return { content: "**You do not have a schedule registered!**", ephemeral: true };
@@ -108,7 +108,7 @@ class Command_Schedule extends CRUDCommand {
     async replyDelete(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const searchUserId: string = options.getUser("user")?.id || executorId;
 
-        const schedule = (await Application.instance.collections.schedules.findOne({ userId: searchUserId })) as unknown as MongoModels.Schedule | null;
+        const schedule = await Application.instance.collections.schedules.findOne<MongoModels.Schedule>({ userId: searchUserId });
         if (schedule == null) {
             Application.logger.info(`User ${executorId} had no schedule registered`);
             return { content: "**You do not have a schedule registered!**", ephemeral: true };
@@ -140,7 +140,7 @@ class Command_Schedule extends CRUDCommand {
     async replySetDisplayname(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const userId: string = options.getUser("user")?.id || executorId;
 
-        const schedule: ISchedule | null = (await Application.instance.collections.schedules.findOne({ userId: userId })) as MongoModels.Schedule | null;
+        const schedule: ISchedule | null = await Application.instance.collections.schedules.findOne<MongoModels.Schedule>({ userId: userId });
         if (schedule == null) {
             Application.logger.info(`User ${executorId} had no schedule registered`);
             return { content: "**You do not have a schedule registered!**", ephemeral: true };

@@ -66,7 +66,7 @@ class Command_Banlist extends CRUDCommand {
 
     async replyCreate(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const searchId = options.getUser("user", true).id;
-        const bannedUser = (await Application.instance.collections.bannedUsers.findOne({ userId: searchId })) as unknown as MongoModels.BannedUser | null;
+        const bannedUser = await Application.instance.collections.bannedUsers.findOne<MongoModels.BannedUser>({ userId: searchId });
         if (bannedUser != null) {
             return { content: "User is already banned!", ephemeral: true };
         }
@@ -82,7 +82,7 @@ class Command_Banlist extends CRUDCommand {
 
     async replyDelete(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
         const searchUserId: string = options.getUser("user", true).id;
-        const bannedUser = (await Application.instance.collections.bannedUsers.findOne({ userId: searchUserId })) as unknown as MongoModels.BannedUser | null;
+        const bannedUser = await Application.instance.collections.bannedUsers.findOne<MongoModels.BannedUser>({ userId: searchUserId });
 
         if (bannedUser == null) {
             return { content: "**User was not banned!**", ephemeral: true };

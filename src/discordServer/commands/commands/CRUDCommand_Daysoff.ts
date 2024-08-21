@@ -194,10 +194,10 @@ class Command_Daysoff extends CRUDCommand {
             date = datePossibleError.date;
         }
 
-        const existingDayoff = (await Application.instance.collections.daysoff.findOne({
+        const existingDayoff = await Application.instance.collections.daysoff.findOne<MongoModels.Dayoff>({
             date: date,
             affectedSchools: affectedSchools
-        })) as unknown as MongoModels.Dayoff | null;
+        });
 
         if (existingDayoff == null) {
             await Application.instance.collections.daysoff.insertOne({

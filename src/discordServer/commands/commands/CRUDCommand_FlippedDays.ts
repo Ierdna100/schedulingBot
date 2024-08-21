@@ -133,10 +133,10 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
         }
         const date = datePossibleError.date;
 
-        const existingFlippedDay = (await Application.instance.collections.daysoff.findOne({
+        const existingFlippedDay = await Application.instance.collections.daysoff.findOne<MongoModels.Dayoff>({
             date: date,
             affectedSchools: affectedSchools
-        })) as unknown as MongoModels.Dayoff | null;
+        });
 
         if (existingFlippedDay == null) {
             await Application.instance.collections.daysoff.insertOne({
