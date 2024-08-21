@@ -8,7 +8,6 @@ import { Authlevel } from "../../../dto/AuthLevel.js";
 import { Application } from "../../../Application.js";
 import { FlippedDay } from "../../../dto/FlippedDay.js";
 import { MongoModels } from "../../../dto/MongoModels.js";
-import { WeekdayEnum, WeekdayInFrench, WeekdayToKeys } from "../../../dto/Schedule.js";
 import { Weekdays } from "../../../dto/Weekdays.js";
 import { TimeFormatter } from "../../../UI/TimeFormatter.js";
 
@@ -123,7 +122,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
     }
 
     async replyCreate(interaction: CommandInteraction, executorId: string, options: CommandOptions): Promise<InteractionReply> {
-        const dayAsString = options.getString("start", true);
+        const dayAsString = options.getString("day", true);
         const affectedSchools = options.getString("affected_school", true) as Schools;
         const replacedDay = parseInt(options.getString("new_day", true));
 
