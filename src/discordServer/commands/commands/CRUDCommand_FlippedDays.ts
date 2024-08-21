@@ -15,7 +15,7 @@ import { TimeFormatter } from "../../../UI/TimeFormatter.js";
 class CRUDCommand_FlippedDays extends CRUDCommand {
     // prettier-ignore
     commandBuilder = new SlashCommandBuilder()
-        .setName("daysoff")
+        .setName("flippeddays")
         .setDescription("Manage the days off")
         .setDefaultMemberPermissions("8")
         .addSubcommand(new SlashCommandSubcommandBuilder()
