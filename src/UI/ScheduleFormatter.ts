@@ -112,6 +112,7 @@ export class ScheduleFormatter {
             console.log(schedule.school);
             const flippedDay = flippedDays.find((e) => e.affectedSchools == schedule.school);
             if (flippedDays.length != 0 && flippedDay != undefined) {
+                console.log(flippedDay);
                 console.log(flippedDay.affectedSchools);
                 localDayKey = WeekdayToKeys[flippedDay.replacedDay - 1] as Weekday;
             }
