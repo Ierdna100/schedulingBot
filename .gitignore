@@ -4,3 +4,4 @@
 .env
 /static/instructionsImages/*
 /static/instructions.json
+/src/test/*
