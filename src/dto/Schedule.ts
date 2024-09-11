@@ -97,9 +97,17 @@ export enum WeekdayEnum {
 export const WeekdayToKeys = ["monday", "tuesday", "wednesday", "thursday", "friday"];
 
 export enum WeekdayInFrench {
-    "Lun" = "monday",
-    "Mar" = "tuesday",
-    "Mer" = "wednesday",
-    "Jeu" = "thursday",
-    "Ven" = "friday"
+    "lun" = "monday",
+    "mar" = "tuesday",
+    "mer" = "wednesday",
+    "jeu" = "thursday",
+    "ven" = "friday"
+}
+
+export enum WeekdayInEnglish {
+    "mon" = "monday",
+    "tue" = "tuesday",
+    "wed" = "wednesday",
+    "thu" = "thursday",
+    "fri" = "friday"
 }
