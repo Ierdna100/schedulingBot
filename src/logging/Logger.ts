@@ -40,25 +40,25 @@ export class Logger {
     }
 
     public info(data: string): void {
-        const baseString = this.name + this.logTime();
+        const baseString = this.logTime() + this.name;
         this.logToFile(baseString + this.parseDetails(data, true));
         console.log(baseString + this.parseDetails(data, false) + Logger.detailLookup.cl);
     }
 
     public trace(data: string): void {
-        const baseString = this.name + this.logTime();
+        const baseString = this.logTime() + this.name;
         this.logToFile(baseString + this.parseDetails(data, true));
         console.trace(Logger.detailLookup.yl + baseString + this.parseDetails(data, false) + Logger.detailLookup.cl);
     }
 
     public error(data: Error): void {
-        const baseString = this.name + this.logTime() + data.message;
+        const baseString = this.logTime() + this.name + data.message;
         this.logToFile(baseString);
         console.error(Logger.detailLookup.rd + baseString + Logger.detailLookup.cl);
     }
 
     public warn(data: string): void {
-        const baseString = this.name + this.logTime();
+        const baseString = this.logTime() + this.name;
         this.logToFile(baseString + this.parseDetails(data, true));
         console.warn(Logger.detailLookup.yl + this.name + this.logTime() + this.parseDetails(data, false) + Logger.detailLookup.cl);
     }
