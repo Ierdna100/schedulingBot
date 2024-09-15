@@ -15,7 +15,7 @@ class CRUDCommand_FlippedDays extends CRUDCommand {
     // prettier-ignore
     commandBuilder = new SlashCommandBuilder()
         .setName("flippeddays")
-        .setDescription("Manage the days off")
+        .setDescription("Manage flipped days (Days that follow another day's schedule and not their own)")
         .setDefaultMemberPermissions("8")
         .addSubcommand(new SlashCommandSubcommandBuilder()
                 .setName(CRUD.create)
