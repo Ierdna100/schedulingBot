@@ -2,6 +2,7 @@
 /build/
 /logs/
 .env
+env.json
 /static/instructionsImages/*
 /static/instructions.json
 /src/test/*
