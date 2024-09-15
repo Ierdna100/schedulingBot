@@ -12,7 +12,7 @@ class ManualInput {
     private collections;
 
     constructor() {
-        this.env = EnvManager.config();
+        this.env = EnvManager.readAndParse();
 
         this.mongClient = new MongoDB.MongoClient(this.env.dbConnectionString);
         this.mongClient.connect();

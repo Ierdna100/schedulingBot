@@ -1,64 +1,51 @@
-import { configDotenv } from "dotenv";
+import fs from "fs";
+import { Logger } from "../logging/Logger.js";
+
+const envFilepath = "./env.json";
 
 export class EnvManager {
-    public static assertDefined(fieldName: string): string {
-        const fieldValue = process.env[fieldName];
+    public static readAndParse(): EnvFileFields {
+        const logger = new Logger("ENV MANAGER");
 
-        if (fieldValue == "" || fieldValue == undefined) {
-            throw new Error(`Environnement field <${fieldName}> not set to a value! Please fill out the .env file!`);
+        if (!fs.existsSync(envFilepath)) {
+            throw new Error("Environnement file does not exist! Please create an env.json file for this project!");
         }
 
-        return fieldValue;
-    }
+        const envFileJSON = JSON.parse(fs.readFileSync(envFilepath).toString());
 
-    public static config(): EnvFileFields {
-        configDotenv();
         let envFileFields = new EnvFileFields();
 
-        envFileFields.firstWeek = parseInt(EnvManager.assertDefined("FIRST_WEEK"));
-        envFileFields.token = EnvManager.assertDefined("TOKEN");
-        envFileFields.clientId = EnvManager.assertDefined("CLIENT_ID");
-        envFileFields.dbConnectionString = EnvManager.assertDefined("DB_CONNECTION_STRING");
-        envFileFields.dbName = EnvManager.assertDefined("DB_NAME");
-        envFileFields.updateChannelId = EnvManager.assertDefined("UPDATE_CHANNEL_ID");
-        envFileFields.updateFreqSec = parseInt(EnvManager.assertDefined("UPDATE_FREQ_SEC"));
-
-        envFileFields.coll_auth = EnvManager.assertDefined("COLL_AUTH");
-        envFileFields.coll_bans = EnvManager.assertDefined("COLL_BANS");
-        envFileFields.coll_daysoff = EnvManager.assertDefined("COLL_DAYSOFF");
-        envFileFields.coll_schedules = EnvManager.assertDefined("COLL_SCHEDULES");
-        envFileFields.coll_periodicMessages = EnvManager.assertDefined("COLL_PERIODIC_MESSAGES");
-        envFileFields.coll_scheduleLogs = EnvManager.assertDefined("COLL_SCHEDULE_LOGS");
-        envFileFields.coll_flippedDays = EnvManager.assertDefined("COLL_FLIPPED_DAYS");
-
-        return envFileFields;
-    }
-
-    public static generateTemplate(): string {
-        const fields = new EnvFileFields();
-
-        let output = "";
-        for (const key in fields) {
-            output += `${EnvManager.keyAsPascalCase(key)}=\n`;
+        const remainingFieldKeys: string[] = [];
+        for (const key in envFileFields) {
+            remainingFieldKeys.push(key);
         }
 
-        return output;
-    }
-
-    private static keyAsPascalCase(key: string): string {
-        let keyOut = "";
-        for (let i = 0; i < key.length; i++) {
-            const char = key.charCodeAt(i);
-
-            if (char >= "A".charCodeAt(0) && char <= "Z".charCodeAt(0)) {
-                keyOut += `_${key.charAt(i)}`;
+        for (const key in envFileJSON) {
+            if (!remainingFieldKeys.includes(key)) {
+                logger.warn(
+                    `Environnement variable with key ${key} is not required by this software, it may be leftover from a previous version. You can safely remove it.`
+                );
                 continue;
             }
 
-            keyOut += key.charAt(i);
+            if (typeof envFileFields[key as keyof EnvFileFields] == "number") {
+                const value = parseFloat(envFileJSON[key]);
+                if (Number.isNaN(value)) {
+                    throw new Error(`Environnement variable with key '${key}' was expected to be a number, but parsing it returned NaN!`);
+                }
+                (envFileFields[key as keyof EnvFileFields] as number) = value;
+            } else {
+                (envFileFields[key as keyof EnvFileFields] as any) = envFileJSON[key];
+            }
+
+            remainingFieldKeys.splice(remainingFieldKeys.indexOf(key), 1);
         }
 
-        return keyOut.toUpperCase();
+        if (remainingFieldKeys.length != 0) {
+            throw new Error(`Environnement field '${remainingFieldKeys[0]}' not set to a value! Please fill out the .env file!`);
+        }
+
+        return envFileFields;
     }
 }
 

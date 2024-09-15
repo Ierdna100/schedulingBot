@@ -17,7 +17,7 @@ export class Application {
     constructor() {
         Application.instance = this;
 
-        this.env = EnvManager.config();
+        this.env = EnvManager.readAndParse();
         Application.logger = new Logger();
         Application.logger.info("Server started!");
 
